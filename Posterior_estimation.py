@@ -36,7 +36,7 @@ fig, axes = plt.subplots(1, 2, figsize=(12, 6))
 axes[0].hist(observations, bins=30, density=True, alpha=0.5, color="gray", label="Data histogram")
 axes[0].plot(mu_grid, kde_density, label="KDE estimate", color="blue")
 axes[0].set_xlabel("Value")
-axes[0].set_ylabel("Density")
+axes[0].set_ylabel("Probability density")
 axes[0].set_title("Data Distribution")
 axes[0].legend()
 
