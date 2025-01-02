@@ -29,9 +29,6 @@ cumulative_posterior = np.cumsum(posterior_density) * (mu_grid[1] - mu_grid[0]) 
 lower_credible = mu_grid[np.searchsorted(cumulative_posterior, 0.025)]  # 2.5% quantile
 upper_credible = mu_grid[np.searchsorted(cumulative_posterior, 0.975)]  # 97.5% quantile
 
-# Compute posterior mean (expected value under the posterior)
-posterior_mean = np.sum(mu_grid * posterior_density) * (mu_grid[1] - mu_grid[0])
-
 # Create a figure with two panels
 fig, axes = plt.subplots(1, 2, figsize=(12, 6))
 
@@ -69,6 +66,5 @@ map_estimate = mu_grid[map_index]
 
 # Print the results
 print('MAP estimator:', round(map_estimate, 3))
-print('Posterior mean:', round(posterior_mean, 3))
 print('True mean:', true_mean)
 print("Hypothesized mean before observing data (prior mean):", prior_mean)
