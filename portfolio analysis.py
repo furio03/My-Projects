@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
-print('ONLY ENTER TICKERS WITH AT LEAST 15 YEARS OF HISTORY')
+print('ONLY ENTER TICKERS WITH AT LEAST 15 YEARS OF HISTORICAL DATA')
 print('')
 print('')
 print('')
