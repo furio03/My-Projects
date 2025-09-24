@@ -28,7 +28,6 @@ tickers = list(np.array(indices)[:, 1])
 
 dw = yf.download(tickers)["Adj Close"]
 
-# Reordering the columns that I don't understand why they get shuffled
 dw = dw.reindex(tickers, axis=1)
 
 
@@ -176,6 +175,7 @@ else:
 
         
         
+
 
 
 
