@@ -13,7 +13,7 @@ Finally, I implemented a backtesting module that evaluates the potential profits
 
 
 Files description (minor projects) :
-1) Posterior_estimation.py: Uses a Bayesian framework to estimate an unknown parameter.
+1) Posterior_estimation.py: Implements a Bayesian approach to estimate the mean of an unknown distribution.
 The script demonstrates how, within Bayesian inference, we can combine prior knowledge and observed data to make the best probabilistic estimate of the parameter.
 
 3) Random_walk.py: Creates 95% upper and lower bounds for random walk processes, which will contain approximately 95% of future observations.
