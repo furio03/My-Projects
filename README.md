@@ -1,4 +1,5 @@
 Summary — Main Project: stock_market_prediction
+
 For a more detailed look inside, see the stock_market_prediction folder, which contains its own README with further details.
 
 This project consists of a set of Python programs that take as input data related to a financial underlying and generate new features from the limited available information, which consists of historical price and volume series.
