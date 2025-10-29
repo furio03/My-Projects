@@ -21,5 +21,5 @@ The rule works as follows: for each row in the dataset, the current closing pric
 
 8) get_data.py : This function retrieves data from Yahoo Finance, accepts different timeframes, and only fetches the following variables: close, volume, and date.
 
-9) analyze_performance.py : display the results in of the strategy
+9) analyze_performance.py : display the results of the strategy.
 
