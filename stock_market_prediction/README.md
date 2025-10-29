@@ -9,3 +9,7 @@ Finally, the program saves the best-performing model, displays its performance o
 3) forecasting.py : This function performs forecasting on a test dataset using a classification model with PyCaret. It sets up the training data with cross-validation, ignoring non-informative features such as Date, Close, and Volume.
 The function automatically handles class weights if provided and creates a model that is then tuned using the F1-score to balance the trade-off between minimizing false positives and false negatives.
 Performance is evaluated on both training and test datasets, providing accuracy and a full classification report. The function returns the predictions on the test set along with a metrics dictionary containing cross-validation metrics, train/test performance, and the tuned model object.
+
+4) indicators.py : In this file, more informative variables for prediction are calculated starting from the only available variables: Volume, Date, and Close.
+
+5) 
