@@ -16,4 +16,10 @@ Performance is evaluated on both training and test datasets, providing accuracy 
 
 6) indicators.py : In this file, more informative variables for prediction are calculated starting from the only available variables: Volume, Date, and Close.
 
-7) 
+7) label.py : This file creates the target variable to be predicted by the model. The closing price is transformed into a 3-level categorical variable: 'buy', 'hold', and 'sell'.
+The rule works as follows: for each row in the dataset, the current closing price is compared to the next day's closing price. If the price increases by at least a defined percentage threshold, the action is 'buy'. If the price decreases by at least the same threshold, the action is 'sell'. Otherwise, the action is 'hold'.
+
+8) get_data.py : This function retrieves data from Yahoo Finance, accepts different timeframes, and only fetches the following variables: close, volume, and date.
+
+9) analyze_performance.py : display the results in of the strategy
+
