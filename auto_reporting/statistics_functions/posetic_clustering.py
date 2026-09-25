@@ -18,43 +18,43 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
                                fuzzy_domination='BrueggemannLerche',
                                function_sep='total_separation') -> dict:
     """
-    Clustering ibrido a TRE stadi con binning per velocità.
+    Hybrid THREE-stage clustering with binning for speed.
     """
     
     print("=" * 70)
-    print("🚀 HYBRID THREE-STAGE CLUSTERING (con BINNING)")
+    print("🚀 HYBRID THREE-STAGE CLUSTERING (with BINNING)")
     print("=" * 70)
     
     # ========================================================================
-    # PREPARAZIONE DATI
+    # DATA PREPARATION
     # ========================================================================
     var_types = identify_variables(df)
     quantitative_cols = var_types.get('quantitative', [])
     
     if not quantitative_cols:
-        raise ValueError("Non sono state trovate variabili ordinali nel DataFrame")
+        raise ValueError("No ordinal variables were found in the DataFrame")
     
     if len(quantitative_cols) > max_variables:
         variances = df[quantitative_cols].var()
         quantitative_cols = variances.nlargest(max_variables).index.tolist()
-        print(f"\n⚠ Limitato a {max_variables} variabili più informative:")
+        print(f"\n⚠ Limited to the {max_variables} most informative variables:")
         print(f"   {quantitative_cols}")
     
     df_ordinal = df[quantitative_cols].copy().dropna()
     n_samples = len(df_ordinal)
     
-    print(f"\n📊 Dataset originale: {n_samples} righe × {len(quantitative_cols)} variabili")
+    print(f"\n📊 Original dataset: {n_samples} rows × {len(quantitative_cols)} variables")
     
     # ========================================================================
     # STAGE 0: BINNING
     # ========================================================================
     print("\n" + "=" * 70)
-    print("STAGE 0: BINNING (Riduzione categorie ordinali)")
+    print("STAGE 0: BINNING (Ordinal category reduction)")
     print("=" * 70)
     
     if auto_bin:
         n_bins = _auto_detect_bins(df_ordinal, quantitative_cols, max_variables)
-        print(f"\n🔍 Auto-detect: n_bins ottimale = {n_bins}")
+        print(f"\n🔍 Auto-detect: optimal n_bins = {n_bins}")
     
     original_dims = [df_ordinal[col].nunique() for col in quantitative_cols]
     original_space_size = np.prod(original_dims)
@@ -69,12 +69,12 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
     actual_cw_dims = [df_binned[col].nunique() for col in quantitative_cols]
     binned_space_size = np.prod(actual_cw_dims)
     
-    print(f"\n📐 Spazio PoSet:")
-    print(f"   PRIMA binning:  {' × '.join(map(str, original_dims))} = {original_space_size:,} nodi")
-    print(f"   DOPO binning:   {' × '.join(map(str, actual_cw_dims))} = {binned_space_size:,} nodi")
-    print(f"   🚀 Riduzione:   {original_space_size / binned_space_size:.1f}x più veloce!")
+    print(f"\n📐 PoSet space:")
+    print(f"   BEFORE binning: {' × '.join(map(str, original_dims))} = {original_space_size:,} nodes")
+    print(f"   AFTER binning:  {' × '.join(map(str, actual_cw_dims))} = {binned_space_size:,} nodes")
+    print(f"   🚀 Reduction:    {original_space_size / binned_space_size:.1f}x faster!")
     
-    print(f"\n✓ Binning completato con strategia '{binning_strategy}'")
+    print(f"\n✓ Binning completed with strategy '{binning_strategy}'")
     for col in quantitative_cols:
         actual_bins = actual_bins_per_col[col]
         print(f"   {col}: {original_dims[quantitative_cols.index(col)]} → {actual_bins} categorie")
@@ -85,13 +85,13 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
     # STAGE 1: K-MEANS
     # ========================================================================
     print("\n" + "=" * 70)
-    print("STAGE 1: K-MEANS CLUSTERING (Riduzione a profili tipici)")
+    print("STAGE 1: K-MEANS CLUSTERING (Reduction to typical profiles)")
     print("=" * 70)
     
     df_stage1 = df_binned.copy()
     if len(df_stage1) > 6000:
         df_stage1 = df_stage1.sample(6000, random_state=42)
-        print(f"⚠ Campionati 6000 punti su {n_samples} per stage 1")
+        print(f"⚠ Sampled 6000 points out of {n_samples} for stage 1")
     
     df_normalized = df_stage1.copy()
     for col in quantitative_cols:
@@ -113,7 +113,7 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
         best_score = -1
         best_model = None
         
-        print(f"\n🔍 Ricerca k ottimale in range [{min_k}, {max_k}]...")
+        print(f"\n🔍 Searching optimal k in range [{min_k}, {max_k}]...")
         for k in range(min_k, max_k + 1):
             kmeans = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=42)
             labels = kmeans.fit_predict(X_scaled)
@@ -127,13 +127,13 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
             if k % 5 == 0:
                 print(f"   k={k:2d}: Silhouette={score:.3f}")
         
-        print(f"\n✓ K ottimale trovato: {best_k} (Silhouette Score: {best_score:.3f})")
+        print(f"\n✓ Optimal k found: {best_k} (Silhouette Score: {best_score:.3f})")
     else:
         best_k = max_k
         best_model = KMeans(n_clusters=best_k, init='k-means++', n_init=10, random_state=42)
         best_model.fit(X_scaled)
         best_score = silhouette_score(X_scaled, best_model.labels_)
-        print(f"\n✓ K-means con k={best_k} fisso (Silhouette: {best_score:.3f})")
+        print(f"\n✓ K-means with fixed k={best_k} (Silhouette: {best_score:.3f})")
     
     df_full_normalized = df_binned.copy()
     for col in quantitative_cols:
@@ -156,62 +156,62 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
     
     cluster_counts = np.bincount(stage1_labels, minlength=best_k)
     
-    print(f"\n📋 Profili tipici estratti (in bin):")
+    print(f"\n📋 Extracted typical profiles (in bins):")
     for i in range(min(5, best_k)):
-        print(f"   Cluster {i}: {cluster_counts[i]:4d} clienti → {centroids_binned[i]}")
+        print(f"   Cluster {i}: {cluster_counts[i]:4d} customers -> {centroids_binned[i]}")
     if best_k > 5:
-        print(f"   ... (altri {best_k - 5} profili)")
+        print(f"   ... ({best_k - 5} more profiles)")
     
     # ========================================================================
     # STAGE 2: POSET CLUSTERING
     # ========================================================================
     print("\n" + "=" * 70)
-    print("STAGE 2: POSET CLUSTERING (Diagramma di Hasse)")
+    print("STAGE 2: POSET CLUSTERING (Hasse diagram)")
     print("=" * 70)
     
     cw_dims = actual_cw_dims.copy()
     
-    print(f"\n📐 Dimensioni component-wise: {cw_dims}")
-    print(f"   Spazio PoSet: {binned_space_size:,} nodi possibili")
-    print(f"   Profili da clusterizzare: {best_k}")
+    print(f"\n📐 Component-wise dimensions: {cw_dims}")
+    print(f"   PoSet space: {binned_space_size:,} possible nodes")
+    print(f"   Profiles to cluster: {best_k}")
     
-    # Normalizza centroidi a 0-based
+    # Normalize centroids to 0-based indexes
     centroids_cw = centroids_binned.copy()
     for i, col in enumerate(quantitative_cols):
         min_val = df_binned[col].min()
         centroids_cw[:, i] = centroids_binned[:, i] - min_val
     
     # ========================================================================
-    # 🔧 FIX: Crea array frequenze per TUTTI i punti del PoSet
+    # 🔧 FIX: Build frequency array for ALL PoSet points
     # ========================================================================
-    print(f"\n🔧 Mappatura frequenze su PoSet completo...")
+    print(f"\n🔧 Mapping frequencies over full PoSet...")
     
-    # Genera TUTTI i punti possibili del PoSet
+    # Generate ALL possible PoSet points
     from itertools import product as itertools_product
     all_points = list(itertools_product(*[range(dim) for dim in cw_dims]))
     
-    # Crea dizionario: punto → frequenza
+    # Create dictionary: point -> frequency
     point_to_freq = {tuple(row): 0 for row in all_points}
     
-    # Assegna frequenze solo ai centroidi
+    # Assign frequencies only to centroids
     for centroid, count in zip(centroids_cw, cluster_counts):
         centroid_tuple = tuple(centroid)
         if centroid_tuple in point_to_freq:
             point_to_freq[centroid_tuple] = count
         else:
-            # Se il centroide non è esattamente un punto del PoSet,
-            # trova il punto più vicino
-            print(f"   ⚠ Centroide {centroid_tuple} non nel PoSet, cerco punto più vicino...")
+            # If the centroid is not exactly a PoSet point,
+            # map it to the nearest valid point
+            print(f"   ⚠ Centroid {centroid_tuple} is not in the PoSet, searching nearest point...")
             closest_point = _find_closest_point(centroid_tuple, all_points, cw_dims)
             point_to_freq[closest_point] += count
     
-    # Converti in lista ordinata (pyLattice usa ordine lessicografico)
+    # Convert to an ordered list (pyLattice uses lexicographic order)
     freq_list = [point_to_freq[point] for point in sorted(all_points)]
     
     # Verifica
     total_assigned = sum(freq_list)
-    print(f"   ✓ Frequenze mappate: {total_assigned}/{n_samples} clienti")
-    print(f"   ✓ Punti con freq > 0: {sum(1 for f in freq_list if f > 0)}/{len(freq_list)}")
+    print(f"   ✓ Mapped frequencies: {total_assigned}/{n_samples} customers")
+    print(f"   ✓ Points with freq > 0: {sum(1 for f in freq_list if f > 0)}/{len(freq_list)}")
     
     # ========================================================================
     # Crea CWDataSet con frequenze complete
@@ -223,34 +223,34 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
     try:
         dataset = CWDataSet(
             cw=tuple(cw_dims),
-            freq=freq_list,  # ORA SONO len(all_points) frequenze!
+            freq=freq_list,  # This now contains len(all_points) frequencies
             fuzzy_domination_function=fuzzy_domination,
             t_norm_function='prod'
         )
     except Exception as e:
-        raise ValueError(f"Errore nella creazione del CWDataSet: {str(e)}")
+        raise ValueError(f"Error while creating CWDataSet: {str(e)}")
     
     # Clustering gerarchico
-    print(f"\n⚙️ Esecuzione clustering gerarchico...")
+    print(f"\n⚙️ Running hierarchical clustering...")
     history_congruences, separations = dataset.classic_gerarchic_cluster(
         function_sep=function_sep
     )
     
-    print(f"✓ Clustering completato: {len(history_congruences)} livelli gerarchici")
+    print(f"✓ Clustering completed: {len(history_congruences)} hierarchical levels")
     
     final_congruence = history_congruences[-2] if len(history_congruences) > 1 else history_congruences[0]
     n_stage2_clusters = len(set(final_congruence))
     
-    print(f"✓ Numero super-clusters finali (Stage 2): {n_stage2_clusters}")
+    print(f"✓ Number of final super-clusters (Stage 2): {n_stage2_clusters}")
     
     # ========================================================================
-    # MAPPATURA: Devi mappare i centroidi originali ai loro indici nel PoSet
+    # MAPPING: Map original centroids to their PoSet indexes
     # ========================================================================
     print("\n" + "=" * 70)
-    print("MAPPATURA: Profili → Super-Clusters")
+    print("MAPPING: Profiles -> Super-Clusters")
     print("=" * 70)
     
-    # Crea mapping: centroide → indice nel PoSet → super-cluster
+    # Build mapping: centroid -> PoSet index -> super-cluster
     centroids_to_poset_idx = {}
     for i, centroid in enumerate(centroids_cw):
         centroid_tuple = tuple(centroid)
@@ -261,12 +261,12 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
             poset_idx = sorted(all_points).index(closest)
         centroids_to_poset_idx[i] = poset_idx
     
-    # Mappa centroidi → super-clusters
+    # Map centroids -> super-clusters
     stage1_to_stage2 = {}
     for centroid_id, poset_idx in centroids_to_poset_idx.items():
         stage1_to_stage2[centroid_id] = final_congruence[poset_idx]
     
-    # Mappa clienti → super-clusters
+    # Map customers -> super-clusters
     final_clusters = np.array([stage1_to_stage2[stage1_label] 
                                 for stage1_label in stage1_labels])
     
@@ -304,7 +304,7 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
     )
     
     for i in range(min(3, n_stage2_clusters)):
-        print(f"\n   Super-Cluster {i} ({int(group_profile.loc[i, 'Count'])} clienti):")
+        print(f"\n   Super-Cluster {i} ({int(group_profile.loc[i, 'Count'])} customers):")
         for col in quantitative_cols:
             bin_val = group_profile_binned.loc[i, f'{col}_binned']
             orig_val = group_profile.loc[i, col]
@@ -312,10 +312,10 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
             print(f"      {col}: {orig_val:.1f} (bin {bin_val:.1f} = {interp})")
     
     # ========================================================================
-    # RISULTATI
+    # RESULTS
     # ========================================================================
     print("\n" + "=" * 70)
-    print("✅ CLUSTERING COMPLETATO")
+    print("✅ CLUSTERING COMPLETED")
     print("=" * 70)
     print(f"\n📈 Performance:")
     print(f"   Stage 0 (Binning):  {original_space_size:,} → {binned_space_size:,} nodi")
@@ -356,7 +356,7 @@ def hybrid_posetic_clustering(df: pd.DataFrame,
 # ============================================================================
 
 def _find_closest_point(centroid: tuple, all_points: list, cw_dims: list) -> tuple:
-    """Trova il punto del PoSet più vicino al centroide (distanza Manhattan)."""
+    """Find the PoSet point nearest to a centroid (Manhattan distance)."""
     min_dist = float('inf')
     closest = None
     
@@ -370,23 +370,23 @@ def _find_closest_point(centroid: tuple, all_points: list, cw_dims: list) -> tup
 
 
 def _auto_detect_bins(df: pd.DataFrame, cols: list, max_vars: int) -> int:
-    """Auto-detect numero ottimale di bin."""
+    """Auto-detect the optimal number of bins."""
     n_vars = len(cols)
     target_space = 1000
     max_bins = int(target_space ** (1 / n_vars))
     optimal_bins = max(3, min(5, max_bins))
     
     print(f"\n🔍 Auto-detect bins:")
-    print(f"   Variabili: {n_vars}")
+    print(f"   Variables: {n_vars}")
     print(f"   Target space: < {target_space} nodi")
-    print(f"   Max bins teorico: {max_bins}")
-    print(f"   Bins scelto: {optimal_bins} (range 3-5)")
+    print(f"   Theoretical max bins: {max_bins}")
+    print(f"   Selected bins: {optimal_bins} (range 3-5)")
     
     return optimal_bins
 
 
 def _apply_binning(df: pd.DataFrame, cols: list, n_bins: int, strategy: str):
-    """Applica binning con gestione robusta."""
+    """Apply binning with robust fallback handling."""
     df_binned = df.copy()
     bin_edges_dict = {}
     bin_labels_dict = {}
@@ -402,7 +402,7 @@ def _apply_binning(df: pd.DataFrame, cols: list, n_bins: int, strategy: str):
             bin_edges_dict[col] = [df[col].min(), df[col].max()]
             bin_labels_dict[col] = [f"[{df[col].min():.1f}, {df[col].max():.1f}]"]
             actual_bins_per_col[col] = 1
-            print(f"   ⚠ {col}: solo {n_unique} valore(i) unico(i) → 1 bin")
+            print(f"   ⚠ {col}: only {n_unique} unique value(s) -> 1 bin")
             continue
         
         try:
@@ -433,7 +433,7 @@ def _apply_binning(df: pd.DataFrame, cols: list, n_bins: int, strategy: str):
             bin_labels_dict[col] = labels
             
         except Exception as e:
-            print(f"   ⚠ {col}: KBinsDiscretizer fallito, uso binning manuale")
+            print(f"   ⚠ {col}: KBinsDiscretizer failed, using manual binning")
             min_val = df[col].min()
             max_val = df[col].max()
             
@@ -460,7 +460,7 @@ def _interpret_clusters(group_profile_binned: pd.DataFrame,
                         bin_edges_dict: dict, 
                         bin_labels_dict: dict,
                         cols: list) -> dict:
-    """Interpreta cluster binned."""
+    """Interpret binned clusters."""
     interpretation = {}
     
     for cluster_id in group_profile_binned.index:
@@ -479,7 +479,7 @@ def auto_hybrid_posetic(df: pd.DataFrame,
                         stage1_k_range=(10, 50),
                         n_bins=3,
                         auto_bin=True) -> pd.DataFrame:
-    """Versione semplificata."""
+    """Simplified wrapper version."""
     result = hybrid_posetic_clustering(
         df, 
         stage1_k_range=stage1_k_range,

@@ -524,9 +524,9 @@ if __name__ == "__main__":
 
     if os.path.exists(file_path):
         df_test = pd.read_csv(file_path)
-        print(f"✅ Dataset caricato: {len(df_test)} righe")
+        print(f"✅ Dataset loaded: {len(df_test)} rows")
 
-        user_goal = "Analizza il profitto e suggerisci strategie di prezzo ottimali" 
+        user_goal = "Analyze profit and suggest optimal pricing strategies"
 
         test_mapping = {
             'monetary_value': 'Price_Unit',      
@@ -552,9 +552,9 @@ if __name__ == "__main__":
                     print(value)
                     
         except Exception as e:
-            print(f"❌ Errore durante l'esecuzione: {e}")
+            print(f"❌ Runtime error: {e}")
             import traceback
             traceback.print_exc()
             
     else:
-        print(f"❌ Errore: Il file '{file_path}' non è stato trovato.")
+        print(f"❌ Error: file '{file_path}' was not found.")

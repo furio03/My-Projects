@@ -105,7 +105,7 @@ def protect_data(results, domain, epsilon=None, delta=0):
             # e.g.: for a value of 1000, sensitivity = 100 (10% of value)
             # instead of 1000 (100% of value)
             if value != 0:
-                sensitivity = abs(value) * 0.10  # 10% del valore come range
+                sensitivity = abs(value) * 0.10  # 10% of the value as sensitivity range
             else:
                 sensitivity = 1.0
             

@@ -13,25 +13,25 @@ from reportlab.lib import colors
 from reportlab.lib.colors import HexColor, white
 import time
 
-# Configurazione percorsi
+# Path configuration
 BASE_DIR = Path(__file__).resolve().parents[1]
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-# Import dal motore main.py
+# Import from the main.py engine
 from main import run_analysis
 from LLM.RAG import build_collection_from_reports, query_reports, get_pdf_files_from_folder
 
 def create_pdf_report(report_text, histogram_path=None, domain_plots=None, domain=None):
     file_path = "4μ_Executive_Report.pdf"
-    # Margini leggermente più ampi per un look più "executive"
+    # Slightly wider margins for a more executive look
     doc = SimpleDocTemplate(file_path, pagesize=letter, topMargin=50, bottomMargin=50, leftMargin=50, rightMargin=50)
     styles = getSampleStyleSheet()
     
-   # --- Palette Colori ---
+    # --- Color Palette ---
     primary_blue = HexColor('#0D47A1')
 
-    # --- Stili ---
+    # --- Styles ---
     title_style = ParagraphStyle(
         'MainTitle',
         parent=styles['h1'],
@@ -49,13 +49,13 @@ def create_pdf_report(report_text, histogram_path=None, domain_plots=None, domai
         textColor=primary_blue,
         alignment=1,
         fontName='Helvetica-Oblique',
-        letterSpacing=1.5, # Un po' di aria tra le lettere per eleganza
+        letterSpacing=1.5, # Add spacing for readability and elegance
         spaceAfter=15
     )
 
     body_style = ParagraphStyle(
         'ModernBody', parent=styles['Normal'], fontSize=10.5, leading=14,
-        alignment=4, spaceAfter=12  # 4 = Giustificato
+        alignment=4, spaceAfter=12  # 4 = Justified
     )
 
     caption_style = ParagraphStyle(
@@ -70,20 +70,20 @@ def create_pdf_report(report_text, histogram_path=None, domain_plots=None, domai
 
     story = []
 
-    # --- Header Pulito ---
+    # --- Clean Header ---
     domain_display = domain.replace('_', ' ').upper() if domain else "GENERAL"
     
-    # Titolo principale con 4u Executive Report
+    # Main title with 4u Executive Report
     story.append(Paragraph("4u Executive Report", title_style))
     
-    # Sottotitolo del Dominio (es. EDUCATION, FINANCE, etc.)
+    # Domain subtitle (e.g. EDUCATION, FINANCE, etc.)
     story.append(Paragraph(domain_display, domain_subtitle_style))
     
-    # Linea singola, netta e professionale
+    # Single, clean, professional line
     story.append(HRFlowable(width="100%", thickness=1.5, color=primary_blue, hAlign='CENTER'))
     story.append(Spacer(1, 25))
 
-    # --- Analisi del Testo ---
+    # --- Text Analysis ---
     paragraphs = report_text.split('\n\n')
     chart_inserted = False
     domain_plots_inserted = set()
@@ -93,45 +93,45 @@ def create_pdf_report(report_text, histogram_path=None, domain_plots=None, domai
         if p_text:
             story.append(Paragraph(p_text, body_style))
             
-            # --- Integrazione Grafico ---
-            # Inseriamo il grafico nel contesto statistico
+            # --- Chart Integration ---
+            # Insert the chart within the statistical context
             if not chart_inserted and histogram_path and any(word in p_text.lower() for word in ["statistical", "variables", "correlation"]):
                 if Path(histogram_path).exists():
                     story.append(Spacer(1, 15))
                     img = RLImage(histogram_path, width=5.2*inch, height=3.5*inch)
                     img.hAlign = 'CENTER'
                     story.append(img)
-                    # Didascalia in blu coordinato
+                    # Coordinated blue caption
                     caption_style = ParagraphStyle('Caption', parent= domain_subtitle_style, fontSize=9, spaceBefore=5)
                     story.append(Paragraph(f"Figure 1: {domain_display} Distribution Analysis", caption_style))
                     story.append(Spacer(1, 25))
                     chart_inserted = True
 
-            # --- Inserimento Grafici di Dominio (NUOVO) ---
+            # --- Domain Plot Insertion (NEW) ---
             if domain_plots and len(domain_plots) > 0:
                 p_lower = p_text.lower()
                 
                 for plot_idx, plot_path in enumerate(domain_plots):
                     if plot_idx in domain_plots_inserted:
-                        continue  # Già inserito, skippa
+                        continue  # Already inserted, skip
                     
                     if not Path(plot_path).exists():
-                        continue  # File non esiste, skippa
+                        continue  # File does not exist, skip
                     
-                    figure_num = plot_idx + 2  # +2 perché Figure 1 è l'istogramma
+                    figure_num = plot_idx + 2  # +2 because Figure 1 is the histogram
                     
-                    # Controlla se l'LLM menziona "Figure 2", "Figure 3", ecc. in questo paragrafo
+                    # Check whether the LLM mentions "Figure 2", "Figure 3", etc. in this paragraph
                     if f"figure {figure_num}" in p_lower:
                         story.append(Spacer(1, 15))
                         
-                        # Inserisci l'immagine
+                        # Insert image
                         img = RLImage(plot_path, width=6*inch, height=4*inch)
                         img.hAlign = 'CENTER'
                         story.append(img)
                         
-                        # Crea didascalia
+                        # Build caption
                         caption_text = Path(plot_path).stem
-                        # Rimuovi prefissi numerici (01_, 02_, ecc.)
+                        # Remove numeric prefixes (01_, 02_, etc.)
                         caption_text = ''.join(c for c in caption_text if not c.isdigit()).strip('_- ')
                         caption_text = caption_text.replace('_', ' ').title()
                         caption_style = ParagraphStyle('Caption', parent=styles['Normal'], fontSize=10,
@@ -140,10 +140,10 @@ def create_pdf_report(report_text, histogram_path=None, domain_plots=None, domai
                         story.append(Paragraph(f"Figure {figure_num}: {caption_text}", caption_style))
                         story.append(Spacer(1, 25))
                         
-                        # Marca come inserito
+                        # Mark as inserted
                         domain_plots_inserted.add(plot_idx)
 
-# --- Appendice per Plot Rimanenti ---
+# --- Appendix for Remaining Plots ---
     if domain_plots:
         remaining_plots = [
             (i, p) for i, p in enumerate(domain_plots) 
@@ -184,7 +184,7 @@ def create_pdf_report(report_text, histogram_path=None, domain_plots=None, domai
     return file_path
 
 def show_upload_progress(file):
-    """Mostra una barra di progresso quando viene caricato un file"""
+    """Show a progress bar while a file is being uploaded."""
     if file is None:
         return ""
     
@@ -212,7 +212,7 @@ def website_analyze(file, user_objective):
         print(f"Error during analysis: {e}")
         return f"<p style='color:#ef4444; font-size: 14px; font-weight: 600;'>Error: {str(e)}</p>", None
     
-    # Card dominio elegante
+    # Elegant domain card
     domain_html = f"""
     <div style='display: inline-block; background: #ffffff; padding: 16px 32px; border-radius: 12px; 
                 margin: 24px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.12);'>
@@ -229,7 +229,7 @@ def website_analyze(file, user_objective):
     return domain_html, None
 
 def show_correlation_matrix(selected_view):
-    """Mostra l'analisi corrispondente al bottone premuto"""
+    """Show the analysis corresponding to the clicked button."""
     global analysis_data
     
     if not analysis_data:
@@ -421,7 +421,7 @@ def show_correlation_matrix(selected_view):
     return html_out
 
 def get_histogram():
-    """Ritorna il percorso dell'istogramma"""
+    """Return the histogram path."""
     global analysis_data
     if analysis_data and analysis_data.get('histogram_path'):
         hist_path = analysis_data['histogram_path']
@@ -430,7 +430,7 @@ def get_histogram():
     return None
 
 def toggle_analysis(button_name):
-    """Attiva/disattiva la visualizzazione dell'analisi"""
+    """Toggle analysis visualization on/off."""
     global visible_sections, analysis_data
     
     if not analysis_data:
@@ -446,7 +446,7 @@ def toggle_analysis(button_name):
     return result
 
 def toggle_histogram():
-    """Attiva/disattiva la visualizzazione dell'istogramma"""
+    """Toggle histogram visualization on/off."""
     global visible_sections, analysis_data
     
     if not analysis_data:
@@ -473,9 +473,9 @@ def website_report(file, user_objective):
     histogram_path = data.get('histogram_path', None)
     return create_pdf_report(data['report'], histogram_path, domain_plots=data.get('domain_plots', []), domain=data['suffix'])
 
-# --- CSS ENTERPRISE PROFESSIONALE A SCHERMO INTERO ---
+# --- Full-Screen Professional Enterprise CSS ---
 custom_css = """
-/* Sfondo blu corporate A TUTTO SCHERMO */
+/* Full-screen corporate blue background */
 html, body, .gradio-container { 
     background-color: #1a365d !important; 
     margin: 0 !important; 
@@ -495,7 +495,7 @@ h1, h3 {
     font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif !important;
 }
 
-/* Bottoni bianchi professionali */
+/* Professional white buttons */
 .gr-button { 
     background-color: #ffffff !important; 
     color: #0f172a !important; 
@@ -515,7 +515,7 @@ h1, h3 {
     transform: translateY(-1px) !important;
 }
 
-/* Box file upload elegante */
+/* Elegant file upload box */
 .gr-file { 
     background-color: #ffffff !important;
     color: #0f172a !important;
@@ -528,7 +528,7 @@ h1, h3 {
     border-color: #cbd5e1 !important;
 }
 
-/* Label bianchi puliti */
+/* Clean white labels */
 .gr-file label {
     color: white !important;
     background-color: transparent !important;
@@ -538,7 +538,7 @@ h1, h3 {
     letter-spacing: 0.8px !important;
 }
 
-/* Area drop file */
+/* File drop area */
 .gr-file .file-preview,
 .gr-file .upload-container {
     background-color: #ffffff !important;
@@ -546,7 +546,7 @@ h1, h3 {
     border-radius: 8px !important;
 }
 
-/* TABELLE PROFESSIONALI ARROTONDATE */
+/* Rounded professional tables */
 .summary-table { 
     width: 100%; 
     background-color: #ffffff !important; 
@@ -592,7 +592,7 @@ h1, h3 {
     border-bottom: none !important;
 }
 
-/* Immagini arrotondate */
+/* Rounded images */
 img {
     border-radius: 12px !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;

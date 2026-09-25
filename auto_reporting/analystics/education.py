@@ -7,9 +7,9 @@ def analytics_education(df: pd.DataFrame, user_objective: str = None)->dict:
     Perform analytics on education data.
 
     """
-    list_variables=['età']
+    list_variables=['age']
     dict_vars=needed_variables(df,list_variables)
-    mean_age=np.mean(df[dict_vars['età']])
+    mean_age=np.mean(df[dict_vars['age']])
 
     
 

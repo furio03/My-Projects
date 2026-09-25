@@ -8,22 +8,22 @@ from LLM.keys import GROQ_API_KEY
 def analizza_dataset(quant_results: None, qual_results: None, date_results: None, corr_matrix: None, 
                     full_df: None, domain:None, graphs: None, domain_plots: None = None, user_objective: str = None, user_language: str = "en") -> str:
     """
-    Analizza un dataset usando Groq API (gratis).
+    Analyze a dataset using the Groq API.
     
     Args:
-        quant_results: Statistiche quantitative
-        qual_results: Statistiche qualitative  
-        date_results: Statistiche temporali
-        corr_matrix: Matrice di correlazione
-        full_df: DataFrame completo
-        domain: Analisi di dominio
-        graphs: Percorso ai grafici
-        domain_plots: Elenco dei percorsi ai grafici specifici del dominio
-        user_objective: Obiettivo dell'analisi specificato dall'utente
-        user_language: Lingua in cui scrivere il report (es: 'it', 'en', 'es')
+        quant_results: Quantitative statistics
+        qual_results: Qualitative statistics
+        date_results: Temporal statistics
+        corr_matrix: Correlation matrix
+        full_df: Full DataFrame
+        domain: Domain analysis output
+        graphs: Path to plots
+        domain_plots: List of domain-specific plot paths
+        user_objective: User-provided analysis objective
+        user_language: Language used to write the report (e.g. 'it', 'en', 'es')
     
     Returns:
-        str: Risposta dell'LLM
+        str: LLM response
     """
     # Language instruction
     language_instruction = f"IMPORTANT: Write the entire report in {user_language.upper()} language. All text must be in this language."
@@ -115,7 +115,7 @@ Chi-Square test results for categorical variables (if present) with pairwise sig
 {last_info}
 """
     
-    # Chiamata Groq API
+    # Groq API call
     response = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
         headers={
@@ -135,28 +135,28 @@ def analizza_outliers(cleaned_report: str, basic_quant_outliers: None, basic_qua
                      basic_date_outliers: None, corr_matrix_outliers: None, df_outliers: None, 
                      profiles_outliers: None, chi_square_results_outliers: None, domain_results: None = None, user_language: str = "en") -> str:
     """
-    Analizza gli outliers in modo comparativo rispetto al dataset cleaned.
+    Analyze outliers comparatively against the cleaned dataset.
     
     Args:
-        cleaned_report: Report già generato per il dataset cleaned
-        basic_quant_outliers: Statistiche quantitative degli outliers
-        basic_qual_outliers: Statistiche qualitative degli outliers
-        basic_date_outliers: Statistiche temporali degli outliers
-        corr_matrix_outliers: Matrice di correlazione degli outliers
-        df_outliers: DataFrame con solo outliers
-        profiles_outliers: Profili K-means degli outliers
-        chi_square_results_outliers: Risultati Chi-Square degli outliers
-        domain_results: Risultati dell'analisi di dominio specifica per gli outliers (se disponibile)
-        user_language: Lingua in cui scrivere il report
+        cleaned_report: Report already generated for the cleaned dataset
+        basic_quant_outliers: Quantitative outlier statistics
+        basic_qual_outliers: Qualitative outlier statistics
+        basic_date_outliers: Temporal outlier statistics
+        corr_matrix_outliers: Outlier correlation matrix
+        df_outliers: DataFrame containing only outliers
+        profiles_outliers: Outlier K-means profiles
+        chi_square_results_outliers: Outlier Chi-Square results
+        domain_results: Outlier-specific domain analysis results (if available)
+        user_language: Language used to write the report
     
     Returns:
-        str: Analisi comparativa degli outliers
+        str: Comparative outlier analysis
     """
     
     # Language instruction
     language_instruction = f"IMPORTANT: Write the entire analysis in {user_language.upper()} language. All text must be in this language."
     
-    # Istruzioni specifiche per l'analisi degli outliers
+    # Specific instructions for outlier analysis
     instructions = """Act as a senior anomaly detection analyst. Your goal is to identify what makes these outliers fundamentally different from the main dataset. 
     You have already analyzed the cleaned dataset (see the CLEANED DATASET REPORT below). Now, focus on understanding the outlier population: What distinguishes them? 
     Are they extreme cases of normal behavior or do they represent entirely different patterns? Look for inversions in correlations, different cluster behaviors, 
@@ -214,7 +214,7 @@ Outliers Chi-Square Test Results:
 IMPORTANT: Your analysis should highlight DIFFERENCES and CONTRASTS with the cleaned dataset. This is not a standalone analysis but a comparative one.
 """
     
-    # Chiamata Groq API
+    # Groq API call
     response = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
         headers={
@@ -232,6 +232,6 @@ IMPORTANT: Your analysis should highlight DIFFERENCES and CONTRASTS with the cle
 
 
 # OLD PROMPT FOR REFERENCE
-# instructions="Commenta i risultati mettendo in relazione, quando possibile, i valori ottenuti con il contesto del dataset.  Puoi capire il contesto del dataset guardando le prime righe e i nomi delle colonne. Presenta alla fine un breve sommario delle osservazioni più rilevanti emerse dall'analisi senza utilizzare un linguaggio tecnico."
-#details="non parlare di errori legati alla qualità dei dati. Fornisci osservazioni significative e pertinenti basate sui dati presentati. Non usare ** per i nomi delle colonne. Per l'elenco usa 1), 2),...."
-#last_info="I commenti devono essere non tecnici per essere comprensibili a un pubblico generale e legati al contesto del dataset, ogni commento deve essere pertinente."
+# instructions="Comment on the results by relating values to the dataset context whenever possible. Understand context by inspecting the first rows and column names. End with a short summary of the most relevant findings using non-technical language."
+# details="Do not discuss data quality errors. Provide meaningful and relevant observations based on the presented data. Do not use ** for column names. For lists use 1), 2), ..."
+# last_info="Comments should be non-technical and understandable by a general audience, and each comment should be relevant to the dataset context."

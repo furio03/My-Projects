@@ -18,19 +18,19 @@ def recognise_domain( df : pd.DataFrame) -> str:
     with open('knowledge_base.txt', 'r') as f:
         knowledge_base = f.read()
     
-    # 2. Prepariamo l'evidenza statistica dai tuoi dati esistenti
-    # Usiamo json.dumps per garantire che Groq legga correttamente i dizionari
+    # Build statistical evidence from the current dataset
+    # json.dumps ensures Groq receives properly formatted dictionaries
     dict_vars = identify_variables(df)
     basic_quant = basic_analytics_quant(df, dict_vars)
     basic_qual = basic_analytics_qual(df, dict_vars)
     
     evidence = {
         "variable_types": dict_vars,
-        # Convertiamo i DataFrame delle statistiche in dizionari semplici
+        # Convert statistics DataFrames into plain dictionaries
         "numeric_summary": basic_quant.to_dict() if hasattr(basic_quant, 'to_dict') else basic_quant,
         "categorical_samples": basic_qual.to_dict() if hasattr(basic_qual, 'to_dict') else basic_qual
     }
-    # Usiamo default=str per gestire qualsiasi residuo strano (NaN, Timestamp, ecc.)
+    # Use default=str to safely serialize NaN, Timestamp, and similar values
     evidence_json = json.dumps(evidence, indent=2, default=str)
 
     info = f"""
@@ -54,7 +54,7 @@ def recognise_domain( df : pd.DataFrame) -> str:
 Columns: {df.columns.tolist()}
 Sample: {df.head(5).to_string()}"""
     
-    # Chiamata Groq API
+    # Groq API call
     response = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
         headers={
@@ -88,7 +88,7 @@ Output ONLY JSON: {{"standard_name": "dataset_column", ...}}
 Columns: {df.columns.tolist()}
 Sample: {df.head(5).to_string()}"""
     
-    # Chiamata Groq API
+    # Groq API call
     response = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
         headers={
@@ -135,15 +135,15 @@ Sample: {df.head(5).to_string()}"""
 
 def identify_target_variable(df: pd.DataFrame, user_objective: str) -> dict:
     """
-    Identifica la variabile target per la regressione basandosi sull'obiettivo dell'utente.
-    Rileva anche la lingua utilizzata dall'utente.
+    Identify the target variable for regression based on the user's objective.
+    Also detect the language used by the user.
     
     Args:
         df: DataFrame pandas
-        user_objective: Stringa con l'obiettivo dell'analisi fornito dall'utente
+        user_objective: String containing the user-provided analysis objective
     
     Returns:
-        dict: {'target_variable': nome_colonna, 'language': lingua_rilevata}
+        dict: {'target_variable': column_name, 'language': detected_language}
     """
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
     
@@ -169,7 +169,7 @@ Output ONLY: {{"target_variable": "column_name", "language": "ISO_code"}}"""
     
     if 'choices' not in response_json:
         print(f"Warning: API response error - {response_json}")
-        # Fallback: usa l'ultima colonna numerica e assume inglese
+        # Fallback: use the last numeric column and default to English
         return {"target_variable": numeric_cols[-1] if numeric_cols else None, "language": "en"}
     
     content = response_json['choices'][0]['message']['content']
@@ -185,17 +185,17 @@ Output ONLY: {{"target_variable": "column_name", "language": "ISO_code"}}"""
     try:
         result = json.loads(content.strip())
     except:
-        # Fallback: usa l'ultima colonna numerica e assume inglese
+        # Fallback: use the last numeric column and default to English
         result = {"target_variable": numeric_cols[-1] if numeric_cols else None, "language": "en"}
     
-    # Verifica che la variabile esista
+    # Validate that the selected variable exists
     if result.get('target_variable') not in numeric_cols:
         result['target_variable'] = numeric_cols[-1] if numeric_cols else None
     
     return result
     
 
-#old prompt for reference: nstructions="Osserva le prime righe del dataset e i nomi delle colonne e identifica il dominio di appartenenza del dataset identificandondolo tra quelli nella lista fornita"+str(domains)
+# old prompt for reference: instructions="Inspect the first rows and column names and identify the dataset domain from the provided list" + str(domains)
 
 
 

@@ -1,12 +1,12 @@
-# Guida all'Integrazione della Privacy nelle Analisi
+# Privacy Integration Guide for Analytics
 
-## Panoramica
+## Overview
 
-Ogni file di analisi di dominio deve applicare **Differential Privacy** ai risultati prima di ritornarli per il report.
+Each domain analytics file should apply Differential Privacy to results before returning them to the reporting layer.
 
 ---
 
-## Template Standard
+## Standard Template
 
 ```python
 import pandas as pd
@@ -15,40 +15,42 @@ from data_manipulation.privacy import protect_data
 def analytics_DOMAIN(df: pd.DataFrame, epsilon=None):
     """
     Perform analytics for the DOMAIN domain with privacy protection.
-    
+
     Args:
         df (pd.DataFrame): Input data
         epsilon (float): Privacy budget (if None, uses domain default)
-    
+
     Returns:
         dict: Results with differential privacy applied
     """
-    print(f"Running analysis for DOMAIN")
-    
-    # === CALCOLA LE TUE METRICHE ===
+    print("Running analysis for DOMAIN")
+
+    # === COMPUTE YOUR METRICS ===
     results = {
         'metric_1': value1,
         'metric_2': value2,
         'metric_3': value3,
         'description': 'Domain specific analysis'
     }
-    
-    # === APPLICA PRIVACY (AUTOMATICO) ===
+
+    # === APPLY PRIVACY (AUTOMATIC) ===
     protected_results = protect_data(results, domain='DOMAIN', epsilon=epsilon)
-    
+
     return protected_results
 ```
 
 ---
 
-## Passo per Passo
+## Step by Step
 
-### 1. Importa la funzione privacy
+### 1. Import the privacy function
+
 ```python
 from data_manipulation.privacy import protect_data
 ```
 
-### 2. Costruisci un dizionario `results` con i tuoi calcoli
+### 2. Build a `results` dictionary with your metrics
+
 ```python
 results = {
     'mean': df['column'].mean(),
@@ -58,55 +60,59 @@ results = {
 }
 ```
 
-### 3. Applica privacy (1 riga!)
+### 3. Apply privacy (1 line)
+
 ```python
 protected_results = protect_data(results, domain='finance', epsilon=None)
 ```
 
-### 4. Ritorna i risultati protetti
+### 4. Return protected results
+
 ```python
 return protected_results
 ```
 
 ---
 
-## Dominio → Livello Privacy (Automatico)
+## Domain -> Privacy Level (Automatic)
 
-| Livello | Epsilon | Domini |
-|---------|---------|--------|
-| **STRICT** | 3.0 | health, finance, hr, insurance, security |
-| **MODERATE** | 5.0 | business_economics, demographics, ecommerce, education, energy, environment, industrial, logistics, macro_economics, marketing, politics, real_estate, retail, social_media, sports, supply_chain, surveys, telecommunications, tourism |
-| **LIGHT** | 7.0 | agriculture, scientific_research |
+| Level | Epsilon | Domains |
+|-------|---------|---------|
+| STRICT | 3.0 | health, finance, hr, insurance, security |
+| MODERATE | 5.0 | business_economics, demographics, ecommerce, education, energy, environment, industrial, logistics, macro_economics, marketing, politics, real_estate, retail, social_media, sports, supply_chain, surveys, telecommunications, tourism |
+| LIGHT | 7.0 | agriculture, scientific_research |
 
 ---
 
-## Metadati nel Risultato
+## Metadata in the Result
 
-Dopo `protect_data()`, il dizionario contiene anche:
+After `protect_data()`, the dictionary may also contain metadata:
 
 ```python
 results = protect_data(results, domain='health')
-# Risultato:
+# Example:
 {
-    'metric_1': 49832.15,              # ← Offuscato
+    'metric_1': 49832.15,
     'metric_2': 48500.22,
-    '_dp_applied': True,               # ← Privacy applicata?
-    '_privacy_level': 'strict',        # ← Livello di privacy
-    '_epsilon': 2.0                    # ← Budget usato
+    '_dp_applied': True,
+    '_privacy_level': 'strict',
+    '_epsilon': 2.0
 }
 ```
 
-### Usa nei commenti LLM:
+### Use in LLM commentary:
+
 ```python
 if results.get('_dp_applied'):
-    privacy_comment = f"Dati protetti con privacy level={results['_privacy_level']}"
+    privacy_comment = f"Data protected with privacy level={results['_privacy_level']}"
 ```
 
 ---
 
-## Esempi per Dominio
+## Domain Examples
 
 ### Health
+
 ```python
 results = {
     'patient_count': len(df),
@@ -117,6 +123,7 @@ protected = protect_data(results, domain='health')
 ```
 
 ### Finance
+
 ```python
 results = {
     'total_revenue': df['amount'].sum(),
@@ -127,6 +134,7 @@ protected = protect_data(results, domain='finance')
 ```
 
 ### Marketing
+
 ```python
 results = {
     'conversion_rate': (df['converted'] == True).sum() / len(df) * 100,
@@ -137,6 +145,7 @@ protected = protect_data(results, domain='marketing')
 ```
 
 ### Agriculture
+
 ```python
 results = {
     'yield_per_hectare': df['yield'].mean(),
@@ -148,57 +157,57 @@ protected = protect_data(results, domain='agriculture')
 
 ---
 
-## Privacy Budget Personalizzato
+## Custom Privacy Budget
 
-Se vuoi un epsilon diverso:
+If you need a custom epsilon:
 
 ```python
-# Usa epsilon=10.0 per meno privacy (più precisione)
+# Use epsilon=10.0 for less privacy (more precision)
 protected = protect_data(results, domain='health', epsilon=10.0)
 
-# Usa epsilon=1.0 per più privacy (meno precisione)
+# Use epsilon=1.0 for more privacy (less precision)
 protected = protect_data(results, domain='health', epsilon=1.0)
 ```
 
 ---
 
-## Checklist per Ogni File
+## Checklist for Each File
 
-- [ ] Importato `protect_data` da `data_manipulation.privacy`
-- [ ] Funzione ritorna un dizionario `results` con metriche numeriche
-- [ ] Applicato `protect_data(results, domain='...')` prima di ritornare
-- [ ] Testato che il risultato sia leggibile (non troppo rumore)
-- [ ] Aggiunto parametro `epsilon` opzionale se vuoi override
+- [ ] Imported `protect_data` from `data_manipulation.privacy`
+- [ ] Function returns a `results` dictionary with numeric metrics
+- [ ] Applied `protect_data(results, domain='...')` before returning
+- [ ] Verified output remains readable (not too noisy)
+- [ ] Added optional `epsilon` parameter if override is needed
 
 ---
 
-## Uso nel Main
+## Usage in Main
 
 ```python
 from analystics.health import analytics_health
 from analystics.finance import analytics_finance
 
-# Le analisi ritornano risultati già protetti
+# Analyses return already protected results
 health_results = analytics_health(df_health)
 finance_results = analytics_finance(df_finance)
 
-# I risultati contengono metadati di privacy
-print(health_results['_privacy_level'])  # 'strict'
-print(finance_results['_epsilon'])       # 2.0
+# Results include privacy metadata
+print(health_results['_privacy_level'])
+print(finance_results['_epsilon'])
 ```
 
 ---
 
-## Domande Frequenti
+## FAQ
 
-**Q: Ma così i dati sono meno precisi!**
-A: Sì, ma l'imprecisione è minima (~1-2% della media). È il compromesso privacy/precisione. L'azienda ottiene risultati usabili + privacy garantita.
+**Q: Doesn't this make data less precise?**
+A: Yes, slightly. The tradeoff is intentional: strong privacy with still useful business insights.
 
-**Q: Posso escludere la privacy?**
-A: Per domini sconosciuti sì, ritorna `results` senza modifiche. Per dominio noto, `protect_data()` applica sempre.
+**Q: Can I skip privacy?**
+A: For unknown domains, yes: `protect_data` can return results unchanged. For known domains, privacy is applied automatically.
 
-**Q: L'LLM come commenta i dati protetti?**
-A: Usa i metadati `_dp_applied`, `_privacy_level`, `_epsilon` nel report.
+**Q: How should the LLM describe protected data?**
+A: Use metadata such as `_dp_applied`, `_privacy_level`, and `_epsilon` in the narrative.
 
-**Q: Le metriche possono diventare negative?**
-A: Raramente con epsilon=2-5. Se succede, è una protezione più forte. Commenta nel report.
+**Q: Can metrics become negative after noise?**
+A: It can happen with stronger privacy settings. Handle it explicitly in the report interpretation.

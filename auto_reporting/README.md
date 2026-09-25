@@ -1,30 +1,30 @@
 # auto_reporting
 
-Apri il terminale Python in VS Code e clona il progetto:
+Open the Python terminal in VS Code and clone the project:
 
 ```bash
 git clone https://github.com/furio03/4M.git
 ```
 
-Per aggiungere, eliminare o modificare file, usa sempre i comandi Git.
+To add, delete, or modify files, always use Git commands.
 
-## Pubblicazione sicura su GitHub (senza chiavi API)
+## Secure GitHub Publishing (without API keys)
 
-1. Salva le chiavi solo in variabili d'ambiente locali.
-2. Non committare mai file .env o chiavi hardcoded nel codice.
-3. Usa .env.example come template condivisibile senza valori reali.
+1. Store keys only in local environment variables.
+2. Never commit .env files or hardcoded keys in source code.
+3. Use .env.example as a shareable template without real values.
 
-### Setup locale chiave Groq
+### Local Groq key setup
 
-Nel terminale:
+In the terminal:
 
 ```bash
-export GROQ_API_KEY="la_tua_chiave_reale"
+export GROQ_API_KEY="your_real_key"
 ```
 
-Poi avvia il progetto normalmente.
+Then run the project normally.
 
-### Primo push consigliato
+### Recommended first push
 
 ```bash
 git add .
@@ -32,7 +32,7 @@ git commit -m "Secure secrets: move API key to env vars"
 git push origin main
 ```
 
-### Se la chiave era gia nei commit precedenti
+### If the key was already committed in previous commits
 
-- Revoca o rigenera subito la chiave dal provider Groq.
-- Riscrivi la history Git per rimuoverla dai vecchi commit prima di rendere pubblico il repository.
+- Revoke or regenerate the key immediately from the Groq provider.
+- Rewrite Git history to remove it from old commits before making the repository public.

@@ -119,7 +119,7 @@ def run_analysis(file_path, user_objective: str = None):
         sig = inspect.signature(analysis)
         params = sig.parameters
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        domain_plots_dir = os.path.join(current_dir, "domain_plots")  # Assoluto, fisso
+        domain_plots_dir = os.path.join(current_dir, "domain_plots")  # Absolute fixed path
 
         # BONUS: Auto-clean old domain plots before generating new ones
         if os.path.exists(domain_plots_dir):
