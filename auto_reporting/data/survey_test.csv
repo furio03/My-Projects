@@ -1,0 +1,101 @@
+Index,Region,Gender,Age,Education,Income_k,Brand_Owned,Rel_ECCO,Sat_Comfort,Sat_Design,Sat_Durability,Price_Fairness,NPS,Sustainability_Bias,Price_Sense,Trend_Follower,Eco_Conscious,Ad_Recall,Store_Visit,Duration_Min,Weight,V22,V23,V24,V25,V26,V27,V28,V29,V30
+1,Bayern,Male,45,Master,62.5,Birkenstock,A brand for me,Very Positive,Neutral,Positive,Fair,8,Very Positive,Low,Neutral,High,Yes,No,8.4,0.92,0,1,0,1,1,0,0,1,0
+2,Berlin,Male,999,Bachelor,,Nike,,Somewhat Negative,Somewhat Positive,Neutral,Expensive,4,Very Positive,Very High,High,Very High,No,Yes,1.2,1.15,1,0,0,0,0,1,0,0,1
+3,Hamburg,Non-Bin,34,High School,28.0,Skechers,Too expensive,Positive,Very Positive,Positive,Very Expensive,6,Positive,High,Low,Neutral,Yes,No,12.1,1.08,0,1,1,0,0,0,1,1
+4,NRW,Female,52,PhD,120.0,Nike,Great quality,Very Positive,Very Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,15.0,0.85,1,1,0,1,1,1,0,0,1
+5,Sachsen,Male,19,,,Adidas,Boring style,Neutral,Neutral,Somewhat Negative,Expensive,2,Somewhat Negative,High,High,Low,Yes,No,0.2,1.30,0,0,0,0,0,0,0,0,0
+6,Hessen,Female,41,Master,58.0,Puma,Reliable,Positive,Somewhat Negative,Positive,Neutral,7,Very Positive,Neutral,Neutral,High,No,Yes,7.2,0.94,1,0,1,1,0,0,1,1,0
+7,Bayern,Male,-5,Bachelor,45.0,Geox,Traditional,Positive,Neutral,Positive,Neutral,5,Positive,Neutral,Low,Neutral,Yes,No,9.5,1.10,0,1,0,0,1,0,1,0,1
+8,Berlin,Female,34,Master,,Nike,Modern design,Neutral,Very Positive,Neutral,Expensive,3,Very Positive,High,High,High,Yes,Yes,10.2,1.21,1,1,1,0,1,1,0,1,1
+9,NRW,Male,60,High School,35.0,Adidas,Trusted brand,Positive,Positive,Very Positive,Neutral,9,Very Positive,Low,Very Low,Neutral,No,Yes,11.5,0.77,0,0,1,1,0,1,1,0,0
+10,Sachsen,Female,28,Bachelor,22.0,Skechers,,Positive,Very Positive,Neutral,Very Expensive,6,Positive,High,High,Very High,Yes,No,6.8,1.25,1,0,0,1,0,1,0,0,1
+11,Bayern,Male,55,PhD,89.0,Gabor,High quality,Very Positive,Somewhat Negative,Very Positive,Fair,9,Very Positive,Low,Low,High,No,Yes,10.5,0.88,0,1,1,1,1,0,0,1,1
+12,Hessen,Female,29,Bachelor,31.0,Puma,Sporty,Positive,Positive,Positive,Neutral,7,Positive,Neutral,Neutral,Neutral,Yes,Yes,8.9,1.05,1,0,0,0,1,1,1,0,0
+13,Berlin,Male,42,Master,55.0,Lloyd,Formal focus,Positive,Neutral,Positive,Fair,8,Very Positive,Neutral,Low,Neutral,No,No,9.1,0.99,1,1,1,1,0,0,0,1,1
+14,NRW,Female,38,High School,,Gabor,Trustworthy,Positive,Neutral,Positive,Neutral,7,Very Positive,Neutral,Neutral,Very High,No,Yes,11.2,1.12,0,1,0,1,1,1,0,1,0
+15,Bayern,Male,50,Master,75.0,Timberland,Outdoor style,Positive,Somewhat Negative,Very Positive,Very Fair,8,Positive,Low,Neutral,High,Yes,No,13.4,0.95,0,0,1,0,1,0,1,0,1
+16,Sachsen,Male,22,Primary,18.0,Nike,Fashionable,Neutral,Positive,Somewhat Negative,Very Expensive,5,Very Positive,Very High,Very High,Low,Yes,Yes,4.5,1.40,1,1,0,0,0,0,0,1,0
+17,Hessen,Female,33,Bachelor,42.0,Adidas,Daily use,Positive,Positive,Positive,Neutral,7,Positive,Neutral,High,Neutral,Yes,No,7.8,1.02,0,0,1,1,0,1,1,0,1
+18,Berlin,Male,48,PhD,95.0,Geox,Very reliable,Very Positive,Very Negative,Very Positive,Fair,9,Very Positive,Very Low,Low,Very High,No,Yes,12.5,0.82,1,1,0,1,1,1,1,1,1
+19,NRW,Female,27,Master,38.0,Skechers,Comfortable,Positive,Positive,Positive,Neutral,8,Positive,Neutral,High,High,Yes,Yes,9.0,1.15,0,1,1,0,1,0,0,1,0
+20,Bayern,Male,999,Bachelor,,Nike,Overpriced,Somewhat Negative,Positive,Neutral,Very Expensive,2,Very Positive,Very High,Very High,Very High,No,No,2.1,1.08,1,0,0,0,0,0,1,0,1
+21,Hamburg,Female,45,PhD,110.0,Gabor,Elegant,Positive,Neutral,Very Positive,Very Fair,9,Very Positive,Low,Low,Very High,Yes,Yes,14.2,0.89,0,1,1,1,1,1,0,1,0
+22,Sachsen,Male,31,High School,25.0,Puma,Affordable,Neutral,Positive,Neutral,Expensive,5,Positive,High,High,Neutral,Yes,No,6.5,1.28,1,0,0,1,0,1,1,0,0
+23,Berlin,Female,52,Master,68.0,Birkenstock,Natural,Very Positive,Somewhat Negative,Positive,Fair,8,Very Positive,Low,Very Low,High,No,Yes,11.8,0.96,1,1,1,1,0,1,0,1,1
+24,NRW,Male,19,Primary,12.0,Nike,Expensive,Somewhat Negative,Positive,Somewhat Negative,Very Expensive,1,Very Positive,Very High,Very High,Low,Yes,No,0.5,1.50,0,0,0,1,0,0,0,0,0
+25,Bayern,Female,39,Bachelor,48.0,Skechers,Soft sole,Positive,Neutral,Neutral,Neutral,7,Very Positive,Neutral,Neutral,High,Yes,Yes,8.3,1.04,1,0,1,1,1,0,1,0,1
+26,Hessen,Male,60,PhD,130.0,Lloyd,High status,Very Positive,Very Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,15.5,0.75,0,1,0,1,1,1,1,1,1
+27,Berlin,Female,24,Bachelor,29.0,Adidas,Stylish,Neutral,Positive,Neutral,Expensive,6,Positive,High,Very High,High,Yes,Yes,5.9,1.22,1,1,1,0,0,0,1,0,0
+28,NRW,Male,43,Master,59.0,Geox,Breathing,Positive,Neutral,Positive,Fair,8,Very Positive,Neutral,Low,High,No,Yes,9.8,0.97,0,1,1,1,1,1,0,1,0
+29,Bayern,Female,55,High School,40.0,Gabor,Classic,Neutral,Somewhat Negative,Very Positive,Neutral,6,Very Positive,Neutral,Very Low,Neutral,No,Yes,10.1,1.18,1,0,1,1,0,1,1,0,1
+30,Sachsen,Male,34,Bachelor,33.0,Nike,Sporty look,Neutral,Positive,Neutral,Expensive,5,Positive,High,Very High,Neutral,Yes,No,7.1,1.10,1,1,0,0,0,1,0,1,0
+31,Hessen,Female,47,Master,65.0,Birkenstock,Healthy,Very Positive,Somewhat Negative,Positive,Fair,9,Very Positive,Low,Very Low,Very High,No,Yes,11.5,0.90,0,1,1,1,1,0,1,1,1
+32,Berlin,Male,-10,PhD,,Adidas,,Positive,Neutral,Very Positive,Neutral,7,Very Positive,Low,Low,High,Yes,Yes,9.5,0.85,1,1,0,1,1,1,1,0,1
+33,NRW,Female,29,Bachelor,34.0,Skechers,Very soft,Neutral,Neutral,Neutral,Neutral,8,Positive,High,High,High,Yes,Yes,8.4,1.14,1,0,1,1,1,0,0,1,0
+34,Bayern,Male,51,Master,72.0,Geox,Waterproof,Positive,Somewhat Negative,Very Positive,Fair,8,Very Positive,Low,Low,High,No,No,12.8,0.96,0,1,1,1,1,1,1,0,1
+35,Sachsen,Female,22,High School,19.0,Nike,Cool,Neutral,Very Positive,Somewhat Negative,Very Expensive,4,Very Positive,Very High,Very High,Neutral,Yes,Yes,4.2,1.35,1,1,0,0,0,0,0,0,0
+36,Hessen,Male,38,Bachelor,45.0,Puma,Casual,Neutral,Neutral,Positive,Neutral,6,Positive,Neutral,High,Neutral,Yes,No,8.1,1.06,1,0,1,1,1,1,0,1,1
+37,Berlin,Female,44,Master,61.0,Gabor,Elegant,Positive,Neutral,Positive,Fair,7,Very Positive,Neutral,Low,High,No,Yes,10.4,1.01,1,1,1,1,1,1,1,1,0
+38,NRW,Male,58,PhD,115.0,Lloyd,Executive,Very Positive,Very Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,14.5,0.78,0,1,0,1,1,1,1,1,1
+39,Bayern,Female,31,Bachelor,36.0,Skechers,Easy walk,Positive,Positive,Neutral,Neutral,9,Positive,High,Very High,Very High,Yes,Yes,7.5,1.18,1,1,1,0,1,0,1,0,1
+40,Sachsen,Male,19,Primary,14.0,Adidas,Cheap,Somewhat Negative,Neutral,Somewhat Negative,Very Expensive,1,Very Positive,Very High,Very High,Low,Yes,No,0.6,1.48,0,0,0,1,0,0,0,0,0
+41,Hessen,Female,53,Master,78.0,Birkenstock,Long lasting,Very Positive,Very Negative,Very Positive,Very Fair,9,Very Positive,Very Low,Very Low,Very High,No,Yes,13.2,0.87,1,1,0,1,1,1,1,1,1
+42,Berlin,Male,26,Bachelor,32.0,Nike,Active,Neutral,Positive,Neutral,Expensive,6,Positive,High,Very High,High,Yes,Yes,6.2,1.24,1,1,1,0,0,0,1,0,0
+43,NRW,Female,48,PhD,98.0,Geox,Reliable tech,Positive,Somewhat Negative,Very Positive,Fair,8,Very Positive,Low,Low,Very High,Yes,Yes,12.4,0.84,0,1,1,1,1,1,0,1,1
+44,Bayern,Male,35,Master,52.0,Puma,Fast,Neutral,Neutral,Positive,Neutral,7,Positive,Neutral,Neutral,High,Yes,No,9.1,1.03,1,0,1,1,1,0,0,1,0
+45,Sachsen,Female,20,High School,17.0,Adidas,Boring,Somewhat Negative,Neutral,Somewhat Negative,Very Expensive,2,Somewhat Negative,Very High,Very High,Low,Yes,No,0.8,1.42,0,0,0,1,0,0,0,0,0
+46,Hessen,Male,42,Bachelor,55.0,Skechers,Comfy,Positive,Neutral,Neutral,Neutral,8,Very Positive,Neutral,Neutral,High,Yes,Yes,10.2,1.01,1,1,1,1,1,1,0,1,1
+47,Berlin,Female,56,PhD,125.0,Gabor,Formal,Very Positive,Somewhat Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,15.1,0.76,0,1,1,1,1,1,1,1,1
+48,NRW,Male,24,Bachelor,28.0,Nike,Hype,Neutral,Very Positive,Neutral,Neutral,5,Positive,High,Very High,Neutral,Yes,Yes,5.5,1.27,1,1,1,0,1,0,1,0,0
+49,Bayern,Female,47,Master,64.0,Birkenstock,Daily comfort,Very Positive,Somewhat Negative,Positive,Fair,9,Very Positive,Low,Very Low,Very High,No,Yes,11.3,0.92,1,1,1,1,1,1,0,1,1
+50,Sachsen,Male,999,Primary,,Adidas,Low cost,Somewhat Negative,Neutral,Somewhat Negative,Very Expensive,2,Very Positive,Very High,Very High,Low,No,No,1.5,1.38,0,0,0,0,0,0,0,0,0
+51,Hessen,Female,34,Bachelor,45.0,Puma,Sporty,Neutral,Neutral,Neutral,Neutral,6,Positive,Neutral,High,High,Yes,Yes,8.5,1.08,1,0,1,1,1,1,0,1,0
+52,Berlin,Male,49,Master,70.0,Geox,Breathable,Positive,Neutral,Positive,Fair,8,Very Positive,Low,Low,High,No,Yes,11.9,0.94,0,1,1,1,1,0,1,1,1
+53,NRW,Female,31,High School,33.0,Skechers,Soft,Positive,Very Positive,Neutral,Neutral,9,Positive,High,Very High,Very High,Yes,Yes,7.4,1.16,1,1,1,0,1,1,1,1,1
+54,Bayern,Male,53,PhD,110.0,Lloyd,Business,Very Positive,Very Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,14.6,0.81,0,1,0,1,1,1,1,1,1
+55,Sachsen,Female,25,Bachelor,29.0,Nike,Streetwear,Neutral,Very Positive,Neutral,Expensive,6,Positive,High,Very High,High,Yes,Yes,6.5,1.25,1,1,1,0,1,1,1,0,0
+56,Hessen,Male,43,Master,60.0,Birkenstock,Supportive,Very Positive,Somewhat Negative,Positive,Fair,8,Very Positive,Low,Very Low,High,No,Yes,10.2,0.98,1,1,1,1,1,1,1,1,1
+57,Berlin,Female,38,High School,41.0,Gabor,Trusted,Neutral,Neutral,Positive,Neutral,7,Very Positive,Neutral,Neutral,Very High,No,Yes,11.1,1.10,0,1,0,1,1,1,0,1,0
+58,NRW,Male,50,Master,76.0,Timberland,Sturdy,Positive,Somewhat Negative,Very Positive,Very Fair,8,Positive,Low,Neutral,High,Yes,No,13.2,0.96,0,0,1,0,1,0,1,0,1
+59,Bayern,Female,22,Primary,19.0,Nike,Modern,Neutral,Very Positive,Somewhat Negative,Expensive,4,Positive,Very High,Very High,Low,Yes,Yes,4.3,1.38,1,1,0,0,0,0,0,1,0
+60,Sachsen,Male,41,Bachelor,55.0,Adidas,Standard,Neutral,Neutral,Positive,Neutral,7,Positive,Neutral,Neutral,High,Yes,No,8.9,1.01,1,0,1,1,1,0,0,1,1
+61,Hessen,Female,56,PhD,122.0,Geox,High tech,Very Positive,Somewhat Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,15.2,0.77,0,1,1,1,1,1,1,1,1
+62,Berlin,Male,24,Bachelor,27.0,Nike,Trendy,Neutral,Very Positive,Neutral,Neutral,6,Positive,High,Very High,High,Yes,Yes,5.6,1.25,1,1,1,0,1,1,1,0,0
+63,NRW,Female,48,Master,65.0,Birkenstock,Eco-friendly,Very Positive,Somewhat Negative,Positive,Fair,9,Very Positive,Low,Very Low,Very High,No,Yes,11.4,0.91,1,1,1,1,1,1,1,1,1
+64,Bayern,Male,34,Bachelor,46.0,Puma,Active,Neutral,Neutral,Neutral,Neutral,6,Positive,Neutral,High,High,Yes,Yes,8.6,1.07,1,0,1,1,1,1,0,1,0
+65,Sachsen,Female,999,High School,,Adidas,Basic,Somewhat Negative,Neutral,Somewhat Negative,Very Expensive,2,Very Positive,Very High,Very High,Low,No,No,1.4,1.35,0,0,0,0,0,0,0,0,0
+66,Hessen,Male,49,Master,71.0,Geox,Quality,Positive,Neutral,Positive,Fair,8,Very Positive,Low,Low,High,No,Yes,12.0,0.93,0,1,1,1,1,0,1,1,1
+67,Berlin,Female,31,High School,34.0,Skechers,Comfy shoes,Positive,Very Positive,Neutral,Neutral,9,Positive,High,Very High,Very High,Yes,Yes,7.6,1.15,1,1,1,0,1,1,1,1,1
+68,NRW,Male,53,PhD,112.0,Lloyd,Professional,Very Positive,Very Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,14.7,0.80,0,1,0,1,1,1,1,1,1
+69,Bayern,Female,25,Bachelor,30.0,Nike,Popular,Neutral,Very Positive,Neutral,Neutral,6,Positive,High,Very High,High,Yes,Yes,6.6,1.23,1,1,1,0,1,1,1,0,0
+70,Sachsen,Male,43,Master,61.0,Birkenstock,Classic brand,Very Positive,Somewhat Negative,Positive,Fair,8,Very Positive,Low,Very Low,High,No,Yes,10.3,0.97,1,1,1,1,1,1,1,1,1
+71,Hessen,Female,38,High School,42.0,Gabor,Reliable shoes,Neutral,Neutral,Positive,Neutral,7,Very Positive,Neutral,Neutral,Very High,No,Yes,11.2,1.09,0,1,0,1,1,1,0,1,0
+72,Berlin,Male,50,Master,77.0,Timberland,Strong,Positive,Somewhat Negative,Very Positive,Very Fair,8,Positive,Low,Neutral,High,Yes,No,13.3,0.95,0,0,1,0,1,0,1,0,1
+73,NRW,Female,22,Primary,20.0,Nike,Style focus,Neutral,Very Positive,Somewhat Negative,Very Expensive,5,Very Positive,Very High,Very High,Low,Yes,Yes,4.4,1.36,1,1,0,0,0,0,0,1,0
+74,Bayern,Male,41,Bachelor,56.0,Adidas,Everyday,Neutral,Neutral,Positive,Neutral,7,Positive,Neutral,Neutral,High,Yes,No,9.0,1.00,1,0,1,1,1,0,0,1,1
+75,Sachsen,Female,56,PhD,123.0,Geox,Tech comfort,Very Positive,Somewhat Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,15.3,0.76,0,1,1,1,1,1,1,1,1
+76,Hessen,Male,24,Bachelor,28.0,Nike,Fast fashion,Neutral,Very Positive,Neutral,Neutral,6,Positive,High,Very High,High,Yes,Yes,5.7,1.24,1,1,1,0,1,1,1,0,0
+77,Berlin,Female,48,Master,66.0,Birkenstock,Natural style,Very Positive,Somewhat Negative,Positive,Fair,9,Very Positive,Low,Very Low,Very High,No,Yes,11.5,0.90,1,1,1,1,1,1,1,1,1
+78,NRW,Male,34,Bachelor,47.0,Puma,Sport look,Neutral,Neutral,Neutral,Neutral,6,Positive,Neutral,High,High,Yes,Yes,8.7,1.06,1,0,1,1,1,1,0,1,0
+79,Bayern,Female,999,High School,,Adidas,Cheaply made,Somewhat Negative,Neutral,Somewhat Negative,Very Expensive,2,Very Positive,Very High,Very High,Low,No,No,1.3,1.33,0,0,0,0,0,0,0,0,0
+80,Sachsen,Male,49,Master,72.0,Geox,Function,Positive,Neutral,Positive,Fair,8,Very Positive,Low,Low,High,No,Yes,12.1,0.92,0,1,1,1,1,0,1,1,1
+81,Hessen,Female,31,High School,35.0,Skechers,Love them,Positive,Very Positive,Neutral,Neutral,9,Positive,High,Very High,Very High,Yes,Yes,7.7,1.14,1,1,1,0,1,1,1,1,1
+82,Berlin,Male,53,PhD,113.0,Lloyd,Prestige,Very Positive,Very Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,14.8,0.79,0,1,0,1,1,1,1,1,1
+83,NRW,Female,25,Bachelor,31.0,Nike,Iconic,Neutral,Very Positive,Neutral,Neutral,6,Positive,High,Very High,High,Yes,Yes,6.7,1.22,1,1,1,0,1,1,1,0,0
+84,Bayern,Male,43,Master,62.0,Birkenstock,Standard comfort,Very Positive,Somewhat Negative,Positive,Fair,8,Very Positive,Low,Very Low,High,No,Yes,10.4,0.96,1,1,1,1,1,1,1,1,1
+85,Sachsen,Female,38,High School,43.0,Gabor,My brand,Neutral,Neutral,Positive,Neutral,7,Very Positive,Neutral,Neutral,Very High,No,Yes,11.3,1.08,0,1,0,1,1,1,0,1,0
+86,Hessen,Male,50,Master,78.0,Timberland,Solid build,Positive,Somewhat Negative,Very Positive,Very Fair,8,Positive,Low,Neutral,High,Yes,No,13.4,0.94,0,0,1,0,1,0,1,0,1
+87,Berlin,Female,22,Primary,21.0,Nike,New trend,Neutral,Very Positive,Somewhat Negative,Expensive,5,Positive,Very High,Very High,Low,Yes,Yes,4.5,1.34,1,1,0,0,0,0,0,1,0
+88,NRW,Male,41,Bachelor,57.0,Adidas,Simple,Neutral,Neutral,Positive,Neutral,7,Positive,Neutral,Neutral,High,Yes,No,9.1,0.99,1,0,1,1,1,0,0,1,1
+89,Bayern,Female,56,PhD,124.0,Geox,Advanced,Very Positive,Somewhat Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,15.4,0.75,0,1,1,1,1,1,1,1,1
+90,Sachsen,Male,24,Bachelor,29.0,Nike,Youth,Neutral,Very Positive,Neutral,Neutral,6,Positive,High,Very High,High,Yes,Yes,5.8,1.23,1,1,1,0,1,1,1,0,0
+91,Hessen,Female,48,Master,67.0,Birkenstock,Pure comfort,Very Positive,Somewhat Negative,Positive,Fair,9,Very Positive,Low,Very Low,Very High,No,Yes,11.6,0.89,1,1,1,1,1,1,1,1,1
+92,Berlin,Male,34,Bachelor,48.0,Puma,Fitness,Neutral,Neutral,Neutral,Neutral,6,Positive,Neutral,High,High,Yes,Yes,8.8,1.05,1,0,1,1,1,1,0,1,0
+93,NRW,Female,999,High School,,Adidas,Not for me,Somewhat Negative,Neutral,Somewhat Negative,Very Expensive,2,Very Positive,Very High,Very High,Low,No,No,1.2,1.31,0,0,0,0,0,0,0,0,0
+94,Bayern,Male,49,Master,73.0,Geox,Breath,Positive,Neutral,Positive,Fair,8,Very Positive,Low,Low,High,No,Yes,12.2,0.91,0,1,1,1,1,0,1,1,1
+95,Sachsen,Female,31,High School,36.0,Skechers,Best ever,Positive,Very Positive,Neutral,Neutral,9,Positive,High,Very High,Very High,Yes,Yes,7.8,1.13,1,1,1,0,1,1,1,1,1
+96,Hessen,Male,53,PhD,114.0,Lloyd,Top tier,Very Positive,Very Negative,Very Positive,Very Fair,10,Very Positive,Very Low,Very Low,Very High,No,Yes,14.9,0.78,0,1,0,1,1,1,1,1,1
+97,Berlin,Female,25,Bachelor,32.0,Nike,Cool brand,Positive,Very Positive,Neutral,Neutral,6,Positive,High,Very High,High,Yes,Yes,6.8,1.21,1,1,1,0,1,1,1,0,0
+98,NRW,Male,43,Master,63.0,Birkenstock,Standard,Very Positive,Somewhat Negative,Positive,Fair,8,Very Positive,Low,Very Low,High,No,Yes,10.5,0.95,1,1,1,1,1,1,1,1,1
+99,Bayern,Female,38,High School,44.0,Gabor,Reliability,Neutral,Neutral,Positive,Neutral,7,Very Positive,Neutral,Neutral,Very High,No,Yes,11.4,1.07,0,1,0,1,1,1,0,1,0
+100,Sachsen,Male,50,Master,79.0,Timberland,Work boots,Positive,Somewhat Negative,Very Positive,Very Fair,8,Positive,Low,Neutral,High,Yes,No,13.5,0.93,0,0,1,0,1,0,1,0,1

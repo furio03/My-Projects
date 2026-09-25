@@ -1,0 +1,62 @@
+================================================================================
+KNOWLEDGE BASE: DATASET DOMAIN CLASSIFICATION PROTOCOL
+================================================================================
+
+SECTION 1: DOMAIN ARCHETYPES & STATISTICAL SIGNATURES
+--------------------------------------------------------------------------------
+- AGRICULTURE: Continuous environmental variables (soil moisture, temp) correlated with crop yield outputs. Metadata: sensors, crop types, fertilization cycles.
+- ENVIRONMENT: Pure physical/chemical measurements (air quality, noise, water). High-precision sensor data. Units: ppm, dB, µg/m3, CO2.
+- INSURANCE: Actuarial data. High skewness in costs/claims (many zeros, few extreme outliers). Metadata: policy_id, risk_class, claim_history.
+- CLINICAL: Biometric and medical trial data. Physiological ranges (heart rate, glucose). High rate of missing values/manual entries. Metadata: protocol_id, treatment_group.
+- DEMOGRAPHIC: Categorical-heavy population data. Fixed distributions of age, gender, ethnicity. Metadata: census_tract, region, household_id.
+- ECOMMERCE: Digital transaction flows. High-velocity timestamps. Web metrics: bounce_rate, clicks, session_duration, cart_status.
+- BUSINESS_ECONOMICS: Internal corporate KPIs. Strict accounting logic: Revenue - Costs = Profit. Metadata: chart_of_accounts, operational_unit.
+- EDUCATION: Student performance and institutional metrics. Hierarchical structures: Student -> Class -> Teacher -> School. Metadata: GPA, test_scores.
+- ENERGY: High-frequency time-series (smart meters). Power metrics: kWh, voltage, reactive power. Pattern: Cyclical peaks/valleys.
+- FINANCE: High-precision float64 data. Market volatility, stock prices, ROI. High cardinality in tickers/assets. Significant market-driven outliers.
+- HR: Employee lifecycle data. Ordinal/Categorical dominance: seniority_level, role, department. Metadata: attrition_risk, performance_rating.
+- INDUSTRIAL: Manufacturing sensor data (vibration, pressure, heat). Machine-level metadata: batch_id, machine_id, maintenance_status.
+- LOGISTICS: Movement and routing. Geospatial focus: GPS (Lat/Lon), travel_time, distance_km. Metadata: vehicle_id, route_segment.
+- MACRO_ECONOMICS: National/Global indicators. Low-frequency time-series (Quarterly/Yearly). Metadata: GDP, Inflation_Rate, Unemployment, CPI.
+- MARKETING: Campaign-driven data. Correlation: Budget/Spend vs. Conversions/Leads. Metadata: channel_type, campaign_id, ad_recall.
+- POLITICS: Electoral and opinion polling. High sampling bias. Categorical/Ordinal mix: party_affiliation, voting_intent, ideology_scale.
+- REAL_ESTATE: Property valuation. Mix of continuous (price, sq_meters) and nominal (neighborhood, type). Metadata: year_built, amenities.
+- RETAIL: Physical store operations. High SKU cardinality. Correlation: Inventory_Level vs. Sales_Volume. Metadata: store_id, shelf_pos.
+- SCIENTIFIC_RESEARCH: High-precision experimental results. Strict protocol-based measurements. Metadata: lab_id, instrument_model, trial_iteration.
+- SURVEYS/SOCIAL_SCIENCE: Self-reported data. Dominance of Likert scales (1-5, 1-7, 1-10) and NPS. Metadata: respondent_id, weight_factor, sentiment_label.
+- SECURITY: Event-based logs. Rare anomaly detection. High-precision timestamps (ms). Metadata: device_id, access_level, log_severity.
+- SOCIAL_MEDIA: Interaction metrics. High textual noise. Metadata: engagement_rate, likes, shares, hashtag_count, follower_growth.
+- SPORTS: Performance analytics. Biometric/Positional data per athlete. Metadata: session_id, athlete_id, match_event.
+- SUPPLY_CHAIN: Procurement and inventory movement. Time-gaps between order and receipt. Metadata: supplier_id, lead_time, warehouse_stock.
+- TELECOMMUNICATIONS: Network traffic and signal data. High volume of discrete events. Metadata: cell_id, signal_strength, call_duration.
+- TOURISM: Seasonal flow data. Periodic price/volume fluctuations. Metadata: booking_type, nationality, star_rating, length_of_stay.
+
+SECTION 2: CRITICAL DISAMBIGUATION MATRIX (Conflict Resolution)
+--------------------------------------------------------------------------------
+CLUSTER A: HUMAN BEHAVIOR & OPINION (Surveys, Marketing, Politics, Social Media, HR, Education)
+- SURVEYS vs. MARKETING: Surveys focus on self-reported opinion (NPS, Satisfaction). Marketing focuses on behavioral action (Clicks, Conversion, Spend).
+- SURVEYS vs. SOCIAL_SCIENCE: Surveys are often commercial/specific. Social Science is academic, includes panel weights, complex demographics, and cross-sectional studies.
+- POLITICS vs. SURVEYS: Politics must have ideological markers (Party, Voting_Intent). If it's just "Brand satisfaction", it's SURVEYS.
+- MARKETING vs. SOCIAL_MEDIA: Marketing tracks budget and ROI. Social Media tracks engagement (Shares, Likes, Hashtags) and platform-specific noise.
+- HR vs. EDUCATION: Both track performance. HR uses Salary/Tenure/Department. Education uses GPA/Semester/Degree/School_ID.
+
+CLUSTER B: FLOWS, GOODS & COMMERCE (Retail, Ecommerce, Logistics, Supply Chain, Tourism, Transport)
+- RETAIL vs. ECOMMERCE: Retail uses physical markers (Store_ID, Cashier, Inventory). Ecommerce uses digital markers (IP, Session_ID, Bounce_Rate, URL).
+- RETAIL vs. SUPPLY_CHAIN: Retail is Point-of-Sale (customer-facing). Supply Chain is Procurement (Supplier_ID, Lead_Time, Raw_Materials).
+- LOGISTICS vs. SUPPLY_CHAIN: Logistics is the "How" (GPS, Route, Delivery_Time). Supply Chain is the "What/When" (Order_Date, Arrival_Date, Inventory_Gap).
+- LOGISTICS vs. TOURISM: Logistics tracks Freight/Cargo. Tourism tracks People (Stay_Length, Rating, Booking_Type, Nationality).
+- TRANSPORT vs. LOGISTICS: Transport is about the vehicle/infrastructure (Fuel, RPM, Maintenance). Logistics is about the movement of goods (Waybill, Route).
+
+CLUSTER C: MACRO & MICRO ECONOMICS (Finance, Business_Econ, Macro_Econ, Insurance, Real_Estate)
+- FINANCE vs. BUSINESS_ECONOMICS: Finance tracks external markets (Stock, ROI, Ticker). Business Econ tracks internal health (OpEx, Revenue, Profit_Margin).
+- FINANCE vs. MACRO_ECONOMICS: Finance is high-frequency (Seconds/Days). Macro is low-frequency (Quarterly/Yearly indicators like GDP, Inflation).
+- INSURANCE vs. FINANCE: Insurance has "Claims" and "Premiums". Finance has "Trades" and "Portfolio_Returns".
+- REAL_ESTATE vs. MACRO_ECONOMICS: Real Estate is asset-specific (Sq_Meters, Address). Macro Econ uses housing indices (Aggregate prices).
+
+CLUSTER D: TECHNICAL & SCIENTIFIC (Agriculture, Environment, Energy, Telecom, Industrial, Security, Clinical, Scientific_Res)
+- AGRICULTURE vs. ENVIRONMENT: Agriculture is output-centric (Yield, Harvest, Fertilizer). Environment is health-centric (Pollutants, ppm, Biodiversity).
+- ENERGY vs. INDUSTRIAL: Energy tracks the grid/consumption (kWh, Voltage). Industrial tracks the machine/line (RPM, Vibration, Batch_ID).
+- TELECOM vs. SECURITY: Telecom tracks traffic/signals (Call_Duration, Cell_ID). Security tracks anomalies (Auth_Fail, Log_Severity, IP_Block).
+- CLINICAL vs. SCIENTIFIC_RESEARCH: Clinical is patient-focused (Diagnosis, Treatment). Scientific Research is protocol-focused (Iteration, Control_Group, Precision_Units).
+
+================================================================================

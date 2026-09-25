@@ -1,0 +1,33 @@
+__pycache__/
+*.pyc
+.DS_Store
+analysis_report_4mu.pdf
+4μ_report.pdf
+4m_report.pdf
+histogram.png
+
+# Images and generated visual assets
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.bmp
+*.tiff
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Keys, certificates, and credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets.*
+credentials.*
+

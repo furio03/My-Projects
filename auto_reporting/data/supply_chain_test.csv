@@ -1,0 +1,100 @@
+Order_ID,Order_Date,Supplier,Product_Category,Unit_Cost,Quantity,Lead_Time_Days,Delivery_Status,Total_Value,Quality_Score
+ORD-001,2026-01-02,GlobalLogix,Electronics,150.50,20,5,On-Time,3010.00,95
+ORD-002,2026-01-02,SwiftSupply,Mechanical,45.00,100,12,Delayed,4500.00,78
+ORD-003,2026-01-03,EuroParts,Raw Materials,12.75,500,7,On-Time,6375.00,92
+ORD-004,2026-01-05,AsiaTech,Electronics,210.00,15,22,Delayed,3150.00,65
+ORD-005,2026-01-05,GlobalLogix,Packaging,2.50,2000,3,On-Time,5000.00,98
+ORD-006,2026-01-06,NordicSteel,Raw Materials,85.00,50,10,On-Time,4250.00,88
+ORD-007,2026-01-08,SwiftSupply,Mechanical,38.00,150,15,Delayed,5700.00,72
+ORD-008,2026-01-10,EuroParts,Electronics,120.00,30,6,On-Time,3600.00,94
+ORD-009,2026-01-11,AsiaTech,Mechanical,55.00,80,25,Cancelled,4400.00,40
+ORD-010,2026-01-12,GlobalLogix,Raw Materials,15.00,1000,4,On-Time,15000.00,97
+ORD-011,2026-01-14,NordicSteel,Electronics,190.00,25,9,On-Time,4750.00,91
+ORD-012,2026-01-15,SwiftSupply,Packaging,3.10,3000,14,Delayed,9300.00,80
+ORD-013,2026-01-17,EuroParts,Mechanical,62.00,45,5,On-Time,2790.00,96
+ORD-014,2026-01-18,AsiaTech,Raw Materials,9.50,1200,30,Delayed,11400.00,55
+ORD-015,2026-01-20,GlobalLogix,Electronics,145.00,40,4,On-Time,5800.00,99
+ORD-016,2026-01-21,NordicSteel,Mechanical,72.00,60,11,On-Time,4320.00,87
+ORD-017,2026-01-22,SwiftSupply,Raw Materials,11.00,800,13,Delayed,8800.00,74
+ORD-018,2026-01-24,EuroParts,Packaging,2.80,5000,6,On-Time,14000.00,93
+ORD-019,2026-01-25,AsiaTech,Electronics,205.00,12,28,Delayed,2460.00,60
+ORD-020,2026-01-27,GlobalLogix,Mechanical,50.00,90,5,On-Time,4500.00,96
+ORD-021,2026-01-28,NordicSteel,Raw Materials,14.50,1500,8,On-Time,21750.00,89
+ORD-022,2026-01-30,SwiftSupply,Electronics,155.00,20,16,Delayed,3100.00,70
+ORD-023,2026-02-01,EuroParts,Mechanical,58.00,70,5,On-Time,4060.00,95
+ORD-024,2026-02-02,AsiaTech,Packaging,3.50,4000,21,Cancelled,14000.00,35
+ORD-025,2026-02-04,GlobalLogix,Electronics,138.00,35,4,On-Time,4830.00,98
+ORD-026,2026-02-05,NordicSteel,Mechanical,68.00,55,10,On-Time,3740.00,92
+ORD-027,2026-02-06,SwiftSupply,Raw Materials,10.50,900,15,Delayed,9450.00,75
+ORD-028,2026-02-08,EuroParts,Electronics,130.00,25,7,On-Time,3250.00,94
+ORD-029,2026-02-09,AsiaTech,Mechanical,52.00,110,24,Delayed,5720.00,62
+ORD-030,2026-02-11,GlobalLogix,Packaging,2.40,6000,3,On-Time,14400.00,97
+ORD-031,2026-02-12,NordicSteel,Electronics,195.00,18,11,On-Time,3510.00,90
+ORD-032,2026-02-14,SwiftSupply,Mechanical,42.00,130,14,Delayed,5460.00,79
+ORD-033,2026-02-15,EuroParts,Raw Materials,13.20,750,6,On-Time,9900.00,91
+ORD-034,2026-02-17,AsiaTech,Electronics,215.00,10,27,Delayed,2150.00,58
+ORD-035,2026-02-18,GlobalLogix,Mechanical,53.00,85,5,On-Time,4505.00,99
+ORD-036,2026-02-20,NordicSteel,Packaging,2.90,2500,9,On-Time,7250.00,88
+ORD-037,2026-02-21,SwiftSupply,Electronics,148.00,22,17,Delayed,3256.00,71
+ORD-038,2026-02-23,EuroParts,Mechanical,65.00,40,5,On-Time,2600.00,95
+ORD-039,2026-02-24,AsiaTech,Raw Materials,10.00,2000,29,Delayed,20000.00,54
+ORD-040,2026-02-26,GlobalLogix,Electronics,152.00,30,4,On-Time,4560.00,98
+ORD-041,2026-02-27,NordicSteel,Mechanical,70.00,50,12,On-Time,3500.00,86
+ORD-042,2026-03-01,SwiftSupply,Raw Materials,12.00,600,13,Delayed,7200.00,76
+ORD-043,2026-03-02,EuroParts,Packaging,3.00,4500,7,On-Time,13500.00,92
+ORD-044,2026-03-04,AsiaTech,Electronics,208.00,14,26,Delayed,2912.00,61
+ORD-045,2026-03-05,GlobalLogix,Mechanical,51.00,95,5,On-Time,4845.00,96
+ORD-046,2026-03-07,NordicSteel,Raw Materials,13.80,1100,10,On-Time,15180.00,89
+ORD-047,2026-03-08,SwiftSupply,Electronics,150.00,28,15,Delayed,4200.00,73
+ORD-048,2026-03-10,EuroParts,Mechanical,60.00,65,6,On-Time,3900.00,94
+ORD-049,2026-03-11,AsiaTech,Packaging,3.30,3500,23,Cancelled,11550.00,38
+ORD-050,2026-03-13,GlobalLogix,Electronics,142.00,45,4,On-Time,6390.00,99
+ORD-051,2026-03-14,NordicSteel,Mechanical,75.00,40,11,On-Time,3000.00,87
+ORD-052,2026-03-16,SwiftSupply,Raw Materials,11.50,1000,14,Delayed,11500.00,75
+ORD-053,2026-03-17,EuroParts,Electronics,125.00,32,7,On-Time,4000.00,93
+ORD-054,2026-03-19,AsiaTech,Mechanical,54.00,120,25,Delayed,6480.00,63
+ORD-055,2026-03-20,GlobalLogix,Packaging,2.60,5500,3,On-Time,14300.00,97
+ORD-056,2026-03-22,NordicSteel,Electronics,192.00,20,10,On-Time,3840.00,91
+ORD-057,2026-03-23,SwiftSupply,Mechanical,40.00,140,16,Delayed,5600.00,78
+ORD-058,2026-03-25,EuroParts,Raw Materials,12.90,800,6,On-Time,10320.00,92
+ORD-059,2026-03-26,AsiaTech,Electronics,212.00,11,28,Delayed,2332.00,59
+ORD-060,2026-03-28,GlobalLogix,Mechanical,52.50,88,4,On-Time,4620.00,98
+ORD-061,2026-03-29,NordicSteel,Packaging,2.85,2800,9,On-Time,7980.00,89
+ORD-062,2026-03-31,SwiftSupply,Electronics,146.00,24,18,Delayed,3504.00,72
+ORD-063,2026-04-01,EuroParts,Mechanical,64.00,42,5,On-Time,2688.00,95
+ORD-064,2026-04-03,AsiaTech,Raw Materials,9.80,1800,30,Delayed,17640.00,56
+ORD-065,2026-04-04,GlobalLogix,Electronics,151.00,33,4,On-Time,4983.00,99
+ORD-066,2026-04-06,NordicSteel,Mechanical,71.00,52,11,On-Time,3692.00,86
+ORD-067,2026-04-07,SwiftSupply,Raw Materials,12.20,650,14,Delayed,7930.00,77
+ORD-068,2026-04-09,EuroParts,Packaging,3.05,4800,7,On-Time,14640.00,93
+ORD-069,2026-04-10,AsiaTech,Electronics,206.00,16,27,Delayed,3296.00,62
+ORD-070,2026-04-12,GlobalLogix,Mechanical,50.50,98,4,On-Time,4949.00,97
+ORD-071,2026-04-13,NordicSteel,Raw Materials,14.00,1200,10,On-Time,16800.00,90
+ORD-072,2026-04-15,SwiftSupply,Electronics,151.00,26,16,Delayed,3926.00,74
+ORD-073,2026-04-16,EuroParts,Mechanical,61.00,68,6,On-Time,4148.00,94
+ORD-074,2026-04-18,AsiaTech,Packaging,3.40,3200,22,Cancelled,10880.00,39
+ORD-075,2026-04-19,GlobalLogix,Electronics,143.00,42,4,On-Time,6006.00,98
+ORD-076,2026-04-21,NordicSteel,Mechanical,74.00,45,12,On-Time,3330.00,88
+ORD-077,2026-04-22,SwiftSupply,Raw Materials,11.30,1100,15,Delayed,12430.00,76
+ORD-078,2026-04-24,EuroParts,Electronics,124.00,35,7,On-Time,4340.00,92
+ORD-079,2026-04-25,AsiaTech,Mechanical,53.50,115,26,Delayed,6152.50,64
+ORD-080,2026-04-27,GlobalLogix,Packaging,2.55,5800,3,On-Time,14790.00,97
+ORD-081,2026-04-28,NordicSteel,Electronics,193.00,19,11,On-Time,3667.00,91
+ORD-082,2026-04-30,SwiftSupply,Mechanical,41.00,135,14,Delayed,5535.00,79
+ORD-083,2026-05-01,EuroParts,Raw Materials,13.00,850,6,On-Time,11050.00,93
+ORD-084,2026-05-03,AsiaTech,Electronics,214.00,12,29,Delayed,2568.00,57
+ORD-085,2026-05-04,GlobalLogix,Mechanical,53.50,82,4,On-Time,4387.00,99
+ORD-086,2026-05-06,NordicSteel,Packaging,2.95,2700,9,On-Time,7965.00,89
+ORD-087,2026-05-07,SwiftSupply,Electronics,147.00,23,17,Delayed,3381.00,73
+ORD-088,2026-05-09,EuroParts,Mechanical,63.00,45,5,On-Time,2835.00,94
+ORD-089,2026-05-10,AsiaTech,Raw Materials,9.90,1900,31,Delayed,18810.00,55
+ORD-090,2026-05-12,GlobalLogix,Electronics,153.00,28,4,On-Time,4284.00,98
+ORD-091,2026-05-13,NordicSteel,Mechanical,72.00,55,12,On-Time,3960.00,87
+ORD-092,2026-05-15,SwiftSupply,Raw Materials,12.50,620,13,Delayed,7750.00,78
+ORD-093,2026-05-16,EuroParts,Packaging,3.10,4600,7,On-Time,14260.00,93
+ORD-094,2026-05-18,AsiaTech,Electronics,209.00,15,25,Delayed,3135.00,60
+ORD-095,2026-05-19,GlobalLogix,Mechanical,51.50,92,4,On-Time,4738.00,96
+ORD-096,2026-05-21,NordicSteel,Raw Materials,14.20,1150,11,On-Time,16330.00,89
+ORD-097,2026-05-22,SwiftSupply,Electronics,152.00,25,16,Delayed,3800.00,75
+ORD-098,2026-05-24,EuroParts,Mechanical,62.00,60,6,On-Time,3720.00,95
+ORD-100,2026-05-27,GlobalLogix,Electronics,141.00,48,4,On-Time,6768.00,99

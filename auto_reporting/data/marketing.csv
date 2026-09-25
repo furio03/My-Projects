@@ -1,0 +1,31 @@
+Client_ID,Brand_Preference,Review_Score,Cost_Perception,Annual_Revenue_k,Visit_Frequency,Monthly_Spend,Saw_Campaign,Life_Stage,App_Interactions
+C-001,Nike,8,Reasonable,45,Monthly,120.5,Yes,Young Adult,45
+C-002,Adidas,9,Premium,88,Weekly,310.0,No,Professional,82
+C-003,Puma,6,Cheap,32,Rarely,45.2,Yes,Student,12
+C-004,Nike,10,Premium,120,Daily,500.0,Yes,Executive,95
+C-005,Reebok,4,Expensive,55,Monthly,88.4,No,Professional,22
+C-006,Adidas,7,Reasonable,42,Weekly,150.0,Yes,Young Adult,61
+C-007,Puma,5,Cheap,28,Rarely,30.5,No,Student,5
+C-008,Asics,9,Fair,65,Weekly,210.0,Yes,Senior,34
+C-009,Nike,3,Overpriced,75,Never,15.0,No,Professional,8
+C-010,Adidas,8,Reasonable,52,Weekly,185.2,Yes,Young Adult,55
+C-011,Nike,9,Premium,95,Daily,420.0,No,Executive,88
+C-012,Reebok,2,Overpriced,40,Never,10.0,No,Student,3
+C-013,Puma,6,Fair,38,Monthly,75.5,Yes,Young Adult,29
+C-014,Asics,10,Fair,72,Weekly,240.0,Yes,Senior,41
+C-015,Adidas,5,Expensive,50,Rarely,60.0,No,Professional,15
+C-016,Nike,7,Reasonable,60,Monthly,135.0,Yes,Professional,48
+C-017,Puma,4,Cheap,25,Never,12.0,No,Student,2
+C-018,Reebok,8,Fair,48,Weekly,155.0,Yes,Young Adult,50
+C-019,Asics,9,Reasonable,81,Daily,380.0,No,Executive,77
+C-020,Adidas,6,Expensive,66,Monthly,110.5,No,Professional,33
+C-021,Nike,10,Premium,130,Daily,600.0,Yes,Executive,99
+C-022,Puma,3,Overpriced,30,Never,5.0,No,Student,1
+C-023,Adidas,8,Fair,55,Weekly,195.0,Yes,Young Adult,62
+C-024,Asics,7,Reasonable,44,Monthly,105.0,No,Senior,25
+C-025,Reebok,5,Cheap,35,Rarely,40.0,Yes,Student,18
+C-026,Nike,9,Premium,110,Weekly,450.0,No,Executive,85
+C-027,Adidas,4,Overpriced,58,Rarely,55.0,No,Professional,10
+C-028,Puma,7,Fair,41,Monthly,90.0,Yes,Young Adult,31
+C-029,Asics,10,Fair,90,Daily,480.0,Yes,Senior,92
+C-030,Nike,6,Reasonable,53,Weekly,140.0,No,Professional,38
