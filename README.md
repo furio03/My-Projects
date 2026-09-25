@@ -9,7 +9,7 @@ This repository brings together several experiments and small projects covering:
 - financial forecasting and trading strategy analysis
 - Bayesian inference and probabilistic estimation
 - portfolio risk analysis
-- automated reporting workflows
+- automated reporting workflows combining statistical analysis with LLM's
 
 ## Featured projects
 
