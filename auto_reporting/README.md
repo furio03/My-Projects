@@ -22,7 +22,11 @@ In the terminal:
 export GROQ_API_KEY="your_real_key"
 ```
 
-Then run the project normally.
+Once your key is set, start the app by running `website.py`:
+
+```bash
+python app/website.py
+```
 
 ### Recommended first push
 
