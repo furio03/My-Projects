@@ -10,6 +10,7 @@ from stock_market_prediction.data_manipulation import shift_df
 from stock_market_prediction.label import label_data
 from stock_market_prediction.main import split_periods, train_and_evaluate
 from unittest.mock import patch
+from stock_market_prediction.forecasting import forecast, temporal_folds
 
 
 class TimingTests(unittest.TestCase):
@@ -77,6 +78,39 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(validation.index[0], 20)
         self.assertEqual(validation.index[-1], 23)
         self.assertEqual(test.index[0], 25)
+
+
+class TemporalTests(unittest.TestCase):
+    def test_each_fold_trains_on_past_only_with_target_gap(self):
+        data = np.arange(120).reshape(-1, 1)
+        labels = np.tile([0, 1, 2], 40)
+        for train, validation in temporal_folds(data, labels, 3):
+            self.assertLess(train[-1] + 1, validation[0])
+
+    def test_actual_search_fits_groups_inside_each_training_fold(self):
+        rng = np.random.default_rng(8)
+        frame = pd.DataFrame({
+            'Date': pd.date_range('2020-01-01', periods=90),
+            'Close': 100., 'feature': rng.normal(size=90),
+            'action': np.tile(['buy', 'hold', 'sell'], 30),
+        })
+        seen = []
+        from stock_market_prediction.forecasting import KMeansFeatures
+        original = KMeansFeatures.fit
+
+        def record(model, X, y=None):
+            seen.append(X.index.to_numpy())
+            return original(model, X, y)
+
+        with patch.object(KMeansFeatures, 'fit', record):
+            predictions, metrics = forecast(frame.iloc[:75], frame.iloc[75:],
+                                            fold=2, n_jobs=1, n_iter=1, model_used='rf')
+        self.assertEqual(len(seen), 3)  # Two folds and the final development refit.
+        expected = temporal_folds(frame.iloc[:75], np.tile([0, 1, 2], 25), 2)
+        for actual, (training, _) in zip(seen, expected):
+            np.testing.assert_array_equal(actual, training)
+        self.assertEqual(len(predictions), 15)
+        self.assertIn('pipeline', metrics['model'])
 
 
 if __name__ == '__main__':

@@ -9,12 +9,12 @@ import pandas as pd
 try:
     from .back_test import back_test_one_symbol
     from .data_manipulation import shift_df
-    from .indicators import calculate_indicators, add_kmeans, find_best_k
+    from .indicators import calculate_indicators
     from .label import label_data
 except ImportError:
     from back_test import back_test_one_symbol
     from data_manipulation import shift_df
-    from indicators import calculate_indicators, add_kmeans, find_best_k
+    from indicators import calculate_indicators
     from label import label_data
 
 
@@ -57,11 +57,8 @@ def split_periods(frame, validation_size=365, test_size=365):
 
 
 def fit_and_forecast(train, evaluation, forecast, **options):
-    train, evaluation = train.copy(), evaluation.copy()
-    k = find_best_k(train)
-    train['groups'], cluster, _ = add_kmeans(train, k)
-    evaluation['groups'] = add_kmeans(evaluation, k, model=cluster)
-    predictions, metrics = forecast(train.dropna(), evaluation.dropna(), **options)
+    predictions, metrics = forecast(train, evaluation, **options)
+    k = metrics['model']['pipeline'].named_steps['groups'].n_clusters
     return predictions, metrics, k
 
 
@@ -93,10 +90,12 @@ def main():
     parser.add_argument('--validation-size', type=int, default=365)
     parser.add_argument('--test-size', type=int, default=365)
     parser.add_argument('--iterations', type=int, default=150)
+    parser.add_argument('--folds', type=int, default=10)
+    parser.add_argument('--model', choices=['xgboost', 'rf'], default='xgboost')
     args = parser.parse_args()
     predictions, metrics, settings = train_and_evaluate(
         read_prices(args.csv), forecast, args.validation_size, args.test_size,
-        target='action', fold=10, n_iter=args.iterations, model_used='xgboost',
+        target='action', fold=args.folds, n_iter=args.iterations, model_used=args.model,
     )
     print('Selected settings:', settings)
     print_metrics(metrics)
