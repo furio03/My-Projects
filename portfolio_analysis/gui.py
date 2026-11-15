@@ -7,6 +7,7 @@ import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
+import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
@@ -50,7 +51,10 @@ class PortfolioApp:
         self.pages = []
         self.overview = self.page('Portfolio & daily risk')
         self.monthly = self.page('Monthly EVT losses')
+        self.frontier_page = self.page('Efficient frontier')
         root.bind('<MouseWheel>', self.scroll_page)
+        ttk.Label(self.frontier_page, text='Explore the return–risk trade-off', font=('Helvetica Neue', 20, 'bold')).pack(anchor='w', pady=18)
+        ttk.Label(self.frontier_page, text='Compare your allocation with long-only portfolios built from the same assets.', wraplength=700).pack(anchor='w')
         self.empty_state()
         self.poll_id = self.root.after(100, self.poll)
 
@@ -285,7 +289,7 @@ class PortfolioApp:
         self.canvases.clear()
         for page in self.pages:
             page.yview_moveto(0)
-        for parent in (self.cards, self.overview, self.monthly):
+        for parent in (self.cards, self.overview, self.monthly, self.frontier_page):
             self.clear(parent)
         mode = 'DEMO · Synthetic data' if result['demo'] else 'Yahoo Finance · Adjusted prices'
         self.context.configure(text=f"{mode}  |  {result['start']:%d %b %Y} – {result['end']:%d %b %Y}  |  {result['settings'].observations:,} returns")
@@ -302,6 +306,7 @@ class PortfolioApp:
         ttk.Label(self.overview, text='Positive VaR and ES mean losses. Annual means are arithmetic estimates, not CAGR.\nCopula margins stay within historical asset extremes; estimates are static and in-sample.',
                   foreground=MUTED, wraplength=800).pack(anchor='w', pady=5)
         self.render_monthly(result)
+        self.render_frontier(result)
 
     def render_monthly(self, result):
         if result['evt'] is None:
@@ -338,6 +343,55 @@ class PortfolioApp:
         ttk.Label(self.monthly, text='Tail-index sensitivity to the threshold', font=('Helvetica Neue', 13, 'bold')).pack(anchor='w', pady=(16, 0))
         self.table(self.monthly, result['stability'].set_index('Threshold quantile'), len(result['stability']))
 
+    def render_frontier(self, result):
+        model = result['frontier_model']
+        frontier = result['frontier']
+        cloud = result['opportunity_set']
+        current = model.point(result['settings'].weights)
+        minimum = model.point(model.minimum_weights)
+        ttk.Label(self.frontier_page, text='Efficient frontier · long-only, fully invested', font=('Helvetica Neue', 16, 'bold')).pack(anchor='w')
+        ttk.Label(self.frontier_page, text='Historical arithmetic returns and sample covariance, annualized over 252 sessions.',
+                  foreground=MUTED, wraplength=800).pack(anchor='w', pady=(6, 10))
+        figure = Figure(figsize=(7.5, 4.2), dpi=100, facecolor='white')
+        axis = figure.add_subplot(111)
+        axis.scatter(cloud['Annual volatility (%)'], cloud['Annual return (%)'],
+                     s=8, c='#C2D2DF', alpha=0.4, label='Feasible allocations')
+        axis.plot(frontier['Annual volatility (%)'], frontier['Annual return (%)'],
+                  color=TEAL, linewidth=2.5, marker='o' if len(frontier) == 1 else None,
+                  label='Efficient frontier')
+        axis.scatter(current['Annual volatility (%)'], current['Annual return (%)'],
+                     color='#E89935', marker='*', s=190, zorder=5, label='Your portfolio')
+        axis.scatter(minimum['Annual volatility (%)'], minimum['Annual return (%)'],
+                     color=INK, marker='D', s=55, zorder=5, label='Minimum variance')
+        for i, asset in enumerate(model.assets):
+            point = model.point([float(j == i) for j in range(model.dimension)])
+            axis.scatter(point['Annual volatility (%)'], point['Annual return (%)'], s=30, color=MUTED)
+            axis.annotate(asset, (point['Annual volatility (%)'], point['Annual return (%)']),
+                          xytext=(5, 5), textcoords='offset points', fontsize=9, color=MUTED)
+        axis.set_xlabel('Annual volatility (%)')
+        axis.set_ylabel('Annual expected return (%)')
+        axis.spines[['top', 'right']].set_visible(False)
+        axis.grid(alpha=0.15)
+        axis.legend(loc='best', fontsize=9)
+        figure.tight_layout()
+        canvas = FigureCanvasTkAgg(figure, master=self.frontier_page)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='x')
+        self.frontier_figure = figure
+        self.canvases.append(canvas)
+        comparison = result['summary'].iloc[[-1]].copy()
+        comparison.index = ['Your portfolio']
+        comparison.loc['Minimum variance'] = [minimum['Annual return (%)'], minimum['Annual volatility (%)']]
+        self.table(self.frontier_page, comparison, 2)
+        weights = {asset: [result['settings'].weights[asset] * 100, weight * 100]
+                   for asset, weight in zip(model.assets, model.minimum_weights)}
+        self.table(self.frontier_page, pd.DataFrame(weights, index=['Your weights (%)', 'Minimum variance (%)']), 2)
+        ttk.Label(self.frontier_page, text=(
+            'The curve starts at the global minimum-variance portfolio. Short sales and leverage are excluded.\n'
+            'Estimated expected returns are uncertain; the frontier is not a forecast or a recommendation. '
+            'EVT loss probabilities are a separate model.'),
+                  foreground=MUTED, wraplength=820).pack(anchor='w', pady=10)
+
     def export(self):
         if self.result is None:
             return
@@ -349,6 +403,8 @@ class PortfolioApp:
             path = Path(folder)
             result['summary'].to_csv(path / 'portfolio_summary.csv')
             result['daily'].to_csv(path / 'daily_risk.csv')
+            result['frontier'].to_csv(path / 'efficient_frontier.csv', index=False)
+            self.frontier_figure.savefig(path / 'efficient_frontier.png', dpi=180, bbox_inches='tight')
             if result['evt'] is not None:
                 result['evt'].to_csv(path / 'monthly_evt_probabilities.csv')
                 result['stability'].to_csv(path / 'evt_threshold_stability.csv', index=False)

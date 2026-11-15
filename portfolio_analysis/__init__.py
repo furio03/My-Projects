@@ -5,8 +5,9 @@ from .core import (
     prepare_returns, read_weights,
 )
 from .evt import ExtremeValueRisk
+from .frontier import EfficientFrontier
 
 __all__ = [
-    'EmpiricalCopula', 'PortfolioAnalysis', 'ExtremeValueRisk', 'download_prices',
+    'EmpiricalCopula', 'PortfolioAnalysis', 'ExtremeValueRisk', 'EfficientFrontier', 'download_prices',
     'loss_risk', 'prepare_returns', 'read_weights', 'main',
 ]

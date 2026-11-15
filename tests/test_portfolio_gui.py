@@ -53,11 +53,16 @@ class DesktopTests(unittest.TestCase):
         app.notebook.select(1)
         self.root.update()
         self.assertGreater(app.canvases[0].get_tk_widget().winfo_width(), 600)
+        app.notebook.select(2)
+        self.root.update()
+        self.assertGreater(app.canvases[1].get_tk_widget().winfo_width(), 600)
         with tempfile.TemporaryDirectory() as folder:
             with patch('portfolio_analysis.gui.filedialog.askdirectory', return_value=folder):
                 app.export()
             self.assertTrue((Path(folder) / 'monthly_evt_probabilities.csv').exists())
             self.assertTrue((Path(folder) / 'analysis_metadata.json').exists())
+            self.assertTrue((Path(folder) / 'efficient_frontier.csv').exists())
+            self.assertGreater((Path(folder) / 'efficient_frontier.png').stat().st_size, 1000)
 
     def test_failed_download_can_be_retried(self):
         app = self.app

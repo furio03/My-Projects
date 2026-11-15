@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from .core import PortfolioAnalysis, download_prices, prepare_returns
+from .frontier import EfficientFrontier
 
 
 @dataclass(frozen=True)
@@ -70,4 +71,8 @@ def analyze(settings, demo=False, progress=lambda message: None):
                        'stability': tail.threshold_stability()})
     except ValueError as error:
         result['evt_error'] = str(error)
+    progress('Optimizing the long-only efficient frontier…')
+    frontier = EfficientFrontier(returns)
+    result.update({'frontier_model': frontier, 'frontier': frontier.curve(),
+                   'opportunity_set': frontier.opportunity_set(seed=settings.seed)})
     return result
