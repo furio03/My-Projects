@@ -90,19 +90,19 @@ conversion, transaction costs, and out-of-sample risk backtesting are not implem
 
 **Stack:** NumPy, pandas, SciPy, yfinance, Tkinter, Matplotlib.
 
-[Source](portfolio_analysis/) · [Desktop launcher](run_guy.py) ·
+[Source](portfolio_analysis/) · [Desktop launcher](portfolio_analysis/run_guy.py) ·
 [Methodology, assumptions, and usage](docs/portfolio_analysis.md)
 
 ```sh
 python3 -m pip install -r requirements-portfolio.txt
-python3 run_guy.py
+python3 portfolio_analysis/run_guy.py
 ```
 
-The desktop window opens **only** through `run_guy.py`. Importing the package or
+The desktop window opens **only** through `portfolio_analysis/run_guy.py`. Importing the package or
 its modules does not open a GUI. For an offline demonstration:
 
 ```sh
-python3 run_guy.py --demo
+python3 portfolio_analysis/run_guy.py --demo
 ```
 
 ## 2. Stock market prediction
@@ -282,8 +282,8 @@ estimate to monitoring a process repeatedly through time.
 
 ```text
 .
-├── run_guy.py                    # The desktop GUI entry point
 ├── portfolio_analysis/           # Returns, copulas, EVT, frontier and desktop UI
+│   └── run_guy.py                # The desktop GUI entry point
 ├── requirements-portfolio.txt
 ├── docs/portfolio_analysis.md    # Risk methodology and assumptions
 ├── stock_market_prediction/      # Temporal ML pipeline and trading simulation

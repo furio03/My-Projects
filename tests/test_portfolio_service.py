@@ -1,4 +1,8 @@
 import importlib
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -10,8 +14,23 @@ from portfolio_analysis.service import Settings, analyze
 class ServiceTests(unittest.TestCase):
     def test_imports_do_not_open_a_window(self):
         with patch('tkinter.Tk', side_effect=AssertionError('Import opened a window')):
-            for name in ('portfolio_analysis', 'portfolio_analysis.gui', 'run_guy'):
+            for name in ('portfolio_analysis', 'portfolio_analysis.gui', 'portfolio_analysis.run_guy'):
                 importlib.reload(importlib.import_module(name))
+
+    def test_launcher_runs_from_outside_the_repository(self):
+        launcher = Path(__file__).resolve().parents[1] / 'portfolio_analysis' / 'run_guy.py'
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run([sys.executable, str(launcher), '--help'], cwd=directory,
+                                    capture_output=True, text=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('--demo', result.stdout)
+
+    def test_internal_gui_file_points_to_the_launcher(self):
+        script = Path(__file__).resolve().parents[1] / 'portfolio_analysis' / 'gui.py'
+        result = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('run_guy.py', result.stderr)
+        self.assertNotIn('Traceback', result.stderr)
 
     def test_settings_reject_invalid_weights_and_work_sizes(self):
         for values in [dict(weights={'A': 0.9}), dict(weights={'A': -1}),

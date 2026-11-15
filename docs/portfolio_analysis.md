@@ -10,19 +10,25 @@ From the repository root:
 
 ```sh
 python3 -m pip install -r requirements-portfolio.txt
-python3 run_guy.py
+python3 portfolio_analysis/run_guy.py
 ```
 
-`run_guy.py` is the only GUI entry point. Importing `portfolio_analysis`, its modules,
+`portfolio_analysis/run_guy.py` is the only GUI entry point. Importing `portfolio_analysis`, its modules,
 or the launcher does not create a window. The old standalone `portfolio_analysis.py`
-has been replaced by the `portfolio_analysis/` package. Tkinter support must be
+has been replaced by the `portfolio_analysis/` package. You can also open the `portfolio_analysis` folder in your editor and run
+`run_guy.py`, or launch it from that folder with `python3 run_guy.py`. Do not run
+`gui.py` directly: it defines the interface but does not start it. The launcher
+resolves imports from its own location, so it also works from another working
+directory when passed an absolute path.
+
+Tkinter support must be
 available in the Python installation; it is not installed by pip. Matplotlib uses
 Tkinter to embed charts in the desktop window.
 
 To explore the app without a connection or market-data download:
 
 ```sh
-python3 run_guy.py --demo
+python3 portfolio_analysis/run_guy.py --demo
 ```
 
 The demo is clearly labeled as synthetic data. It uses a fixed generated sample;

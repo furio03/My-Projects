@@ -2,6 +2,11 @@
 
 import json
 from pathlib import Path
+
+if __name__ == '__main__':
+    launcher = Path(__file__).with_name('run_guy.py')
+    raise SystemExit(f'To open Portfolio Lab, run the launcher instead:\npython3 "{launcher}"')
+
 from queue import Empty, Queue
 import threading
 import tkinter as tk
