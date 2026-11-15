@@ -30,7 +30,7 @@ A machine learning-based stock market project that:
 
 - `Posterior_estimation.py` — Bayesian estimation of an unknown mean
 - `Random_Walk.py` — probabilistic range estimation for random-walk processes
-- `portfolio analysis.py` — portfolio return analysis and risk concentration checks
+- `portfolio_analysis.py` — portfolio return analysis and risk concentration checks
 
 ---
 
@@ -44,7 +44,7 @@ My-Projects/
 │   └── README.md
 ├── Posterior_estimation.py
 ├── Random_Walk.py
-├── portfolio analysis.py
+├── portfolio_analysis.py
 ├── README.md
 └── ...
 ```
@@ -66,7 +66,7 @@ Implements a Bayesian approach to estimate the mean of an unknown distribution b
 ### 2) `Random_Walk.py`
 Creates approximate 95% confidence bounds for random walk processes to estimate likely future variation.
 
-### 3) `portfolio analysis.py`
+### 3) `portfolio_analysis.py`
 Performs portfolio analysis by calculating returns, standard deviations, and concentration of risk using PCA.
 
 ## Summary
