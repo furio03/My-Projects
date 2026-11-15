@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 from scipy import optimize, stats
-from portfolio_evt import ExtremeValueRisk
+from .evt import ExtremeValueRisk
 
 
 TRADING_DAYS = 252
@@ -251,6 +251,3 @@ def main():
     except (ValueError, EOFError) as error:
         parser.exit(1, f"Error: {error}\n")
 
-
-if __name__ == "__main__":
-    main()

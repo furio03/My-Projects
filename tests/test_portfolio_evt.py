@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from scipy import stats
 
-from portfolio_evt import ExtremeValueRisk, binomial_interval, fit_tail
+from portfolio_analysis.evt import ExtremeValueRisk, binomial_interval, fit_tail
 
 
 def synthetic_returns():
