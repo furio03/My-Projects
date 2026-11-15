@@ -69,6 +69,20 @@ The cluster scaler is fitted once on training observations and stored with the
 centroids. Predicting one row or a batch with unrelated outliers does not change
 that row's scale or group assignment.
 
+## Backtest accounting
+
+Each accepted buy or sell adds a fixed 1,000 monetary units at that session's
+actual close. An opposite signal closes the existing side; it does not also open
+the opposite side on the same row. Hold leaves the position unchanged.
+
+The default initial capital is 3,000 units. `realized_profit` includes closed trades,
+`unrealized_profit` marks the current position at each close, and `cumulative_profit`
+is their sum. `cash` records financing flows, `exposure` is signed market value,
+and `equity = cash + exposure = initial_cash + cumulative_profit`. An open final
+position remains marked to market instead of disappearing from the result.
+Short positions have negative exposure. There are no fees, slippage, borrow costs,
+interest, dividends credited separately, or margin calls in this accounting model.
+
 ## Files and tests
 
 - `main.py`: read prices, prepare delayed inputs, select settings, and save the model.

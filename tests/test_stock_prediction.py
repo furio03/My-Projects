@@ -162,5 +162,45 @@ class PersistenceTests(unittest.TestCase):
                 load_artifact('legacy.pkl')
 
 
+class AccountingTests(unittest.TestCase):
+    def instructions(self, actions, closes):
+        return pd.DataFrame({
+            'Date': pd.date_range('2025-01-01', periods=len(actions)),
+            'Close': closes, 'prediction_label': actions,
+        })
+
+    def test_open_long_and_short_are_marked_to_market(self):
+        for action, profit, cash in [('buy', 100., 2000.), ('sell', -100., 4000.)]:
+            result = back_test_one_symbol(self.instructions([action, 'hold'], [100., 110.]))
+            last = result.iloc[-1]
+            self.assertEqual(last.realized_profit, 0)
+            self.assertAlmostEqual(last.unrealized_profit, profit)
+            self.assertAlmostEqual(last.cumulative_profit, profit)
+            self.assertAlmostEqual(last.cash, cash)
+            self.assertAlmostEqual(last.equity, 3000 + profit)
+            np.testing.assert_allclose(result.equity, result.cash + result.exposure)
+            np.testing.assert_allclose(result.equity - 3000, result.cumulative_profit)
+
+    def test_closing_position_does_not_double_count_unrealized_profit(self):
+        result = back_test_one_symbol(self.instructions(['buy', 'hold', 'sell'], [100., 110., 120.]))
+        self.assertAlmostEqual(result.realized_profit.iloc[-1], 200.)
+        self.assertEqual(result.unrealized_profit.iloc[-1], 0)
+        self.assertAlmostEqual(result.equity.iloc[-1], 3200.)
+        self.assertAlmostEqual(result.cash.iloc[-1], 3200.)
+
+    def test_multiple_entries_use_quantity_weighted_cost(self):
+        result = back_test_one_symbol(self.instructions(['buy', 'buy', 'sell'], [100., 200., 150.]))
+        self.assertAlmostEqual(result.realized_profit.iloc[-1], 250.)
+        self.assertAlmostEqual(result.equity.iloc[-1], 3250.)
+
+    def test_invalid_execution_data_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'finite and positive'):
+            back_test_one_symbol(self.instructions(['buy'], [0.]))
+        frame = self.instructions(['buy', 'sell'], [100., 110.])
+        frame['Date'] = frame.Date.iloc[0]
+        with self.assertRaisesRegex(ValueError, 'unique'):
+            back_test_one_symbol(frame)
+
+
 if __name__ == '__main__':
     unittest.main()
