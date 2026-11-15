@@ -1,22 +1,19 @@
 """Select settings on validation data, then evaluate once on the final test period."""
 
 import argparse
+import sys
 from pathlib import Path
 
 import joblib
 import pandas as pd
 
-try:
-    from .back_test import back_test_one_symbol
-    from .data_manipulation import shift_df
-    from .indicators import calculate_indicators
-    from .label import label_data
-except ImportError:
-    from back_test import back_test_one_symbol
-    from data_manipulation import shift_df
-    from indicators import calculate_indicators
-    from label import label_data
+if __package__ in (None, ''):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from stock_market_prediction.back_test import back_test_one_symbol
+from stock_market_prediction.data_manipulation import shift_df
+from stock_market_prediction.indicators import calculate_indicators
+from stock_market_prediction.label import label_data
 
 ROOT = Path(__file__).resolve().parent
 
@@ -77,30 +74,38 @@ def train_and_evaluate(prices, forecast, validation_size=365, test_size=365, **o
     # Refit on all pre-test observations, purging the target next to the test.
     development = frame.iloc[:len(frame) - test_size - 1].dropna(subset=['action'])
     predictions, metrics, k = fit_and_forecast(development, test, forecast, **options)
-    return predictions, metrics, {'threshold': best_threshold, 'shift': 1, 'best_k': k}
+    return predictions, metrics, {
+        'threshold': best_threshold, 'shift': 1, 'best_k': k,
+        'trained_through': development.Date.max(), 'test_start': test.Date.min(),
+    }
+
+
+def save_artifact(model, settings, path):
+    """Persist the fitted pipeline, label mapping, timing, and selected settings."""
+    joblib.dump({'format_version': 1, 'model': model, **settings}, path)
 
 
 def main():
-    try:
-        from .forecasting import forecast, print_metrics
-    except ImportError:
-        from forecasting import forecast, print_metrics
+    from stock_market_prediction.forecasting import forecast, print_metrics
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--csv', type=Path, default=ROOT / 'AAPL_historical_data_1d.csv')
     parser.add_argument('--validation-size', type=int, default=365)
     parser.add_argument('--test-size', type=int, default=365)
-    parser.add_argument('--iterations', type=int, default=150)
+    parser.add_argument('--iterations', type=int, default=30)
+    parser.add_argument('--jobs', type=int, default=1)
     parser.add_argument('--folds', type=int, default=10)
     parser.add_argument('--model', choices=['xgboost', 'rf'], default='xgboost')
+    parser.add_argument('--output-dir', type=Path, default=ROOT)
     args = parser.parse_args()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     predictions, metrics, settings = train_and_evaluate(
         read_prices(args.csv), forecast, args.validation_size, args.test_size,
-        target='action', fold=args.folds, n_iter=args.iterations, model_used=args.model,
+        target='action', fold=args.folds, n_iter=args.iterations, model_used=args.model, n_jobs=args.jobs,
     )
     print('Selected settings:', settings)
     print_metrics(metrics)
-    back_test_one_symbol(predictions).to_csv(ROOT / 'performance.csv', index=False)
-    joblib.dump({'model': metrics['model'], **settings}, ROOT / 'best_model.pkl')
+    back_test_one_symbol(predictions).to_csv(args.output_dir / 'performance.csv', index=False)
+    save_artifact(metrics['model'], settings, args.output_dir / 'best_model.pkl')
 
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 """Small deterministic checks for the stock prediction workflow."""
 
 import unittest
+import tempfile
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -8,7 +10,9 @@ import pandas as pd
 from stock_market_prediction.back_test import back_test_one_symbol
 from stock_market_prediction.data_manipulation import shift_df
 from stock_market_prediction.label import label_data
-from stock_market_prediction.main import split_periods, train_and_evaluate
+from stock_market_prediction.main import split_periods, train_and_evaluate, save_artifact
+from stock_market_prediction.deploy_model import load_artifact
+from stock_market_prediction.forecasting import predict
 from unittest.mock import patch
 from stock_market_prediction.forecasting import forecast, temporal_folds
 from stock_market_prediction.indicators import add_kmeans
@@ -128,6 +132,34 @@ class ScalingTests(unittest.TestCase):
         self.assertEqual(first.iloc[0], second.iloc[0])
         self.assertEqual(first.iloc[0], alone.iloc[0])
         np.testing.assert_array_equal(model.named_steps['standardscaler'].mean_, mean)
+
+
+class PersistenceTests(unittest.TestCase):
+    def test_saved_model_predicts_without_refitting_and_keeps_unknown_targets(self):
+        rng = np.random.default_rng(24)
+        frame = pd.DataFrame({
+            'Date': pd.date_range('2020-01-01', periods=90),
+            'Close': 100., 'feature': rng.normal(size=90),
+            'action': np.tile(['buy', 'hold', 'sell'], 30),
+        })
+        expected, metrics = forecast(frame.iloc[:75], frame.iloc[75:], fold=2,
+                                      n_jobs=1, n_iter=1, model_used='rf')
+        evaluation = frame.iloc[75:].copy()
+        evaluation.loc[evaluation.index[-1], 'action'] = None
+        settings = {'threshold': 0.3, 'shift': 1, 'trained_through': frame.Date.iloc[74],
+                    'test_start': frame.Date.iloc[75]}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'model.pkl'
+            save_artifact(metrics['model'], settings, path)
+            loaded = load_artifact(path)
+            with patch('sklearn.pipeline.Pipeline.fit', side_effect=AssertionError('Deployment refit')):
+                actual = predict(loaded['model'], evaluation)
+        np.testing.assert_array_equal(actual.prediction_label, expected.prediction_label)
+        np.testing.assert_allclose(actual.prediction_score, expected.prediction_score)
+        self.assertTrue(pd.isna(actual.action.iloc[-1]))
+        with patch('joblib.load', return_value={'model': object()}):
+            with self.assertRaisesRegex(ValueError, 'Retrain'):
+                load_artifact('legacy.pkl')
 
 
 if __name__ == '__main__':

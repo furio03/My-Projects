@@ -9,10 +9,7 @@ from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
-try:
-    from .indicators import add_kmeans
-except ImportError:
-    from indicators import add_kmeans
+from stock_market_prediction.indicators import add_kmeans
 
 
 class KMeansFeatures(TransformerMixin, BaseEstimator):
