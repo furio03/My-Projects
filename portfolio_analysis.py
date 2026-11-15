@@ -1,184 +1,237 @@
-# -*- coding: utf-8 -*-
+"""Daily portfolio risk with empirical margins and Gaussian or Student t copulas."""
+
+import argparse
 
 import numpy as np
 import pandas as pd
 import yfinance as yf
-
-print('ONLY ENTER TICKERS WITH AT LEAST 15 YEARS OF HISTORICAL DATA')
-print('')
-print('')
-print('')
-weights = {}
-indices = [["S&P500","^GSPC"],["FTSE UK","^FTSE"],["Russell 2000 USA small caps","^RUT"],
-     ["STOXX 50 Europe","^STOXX50E"],["Nikkei Japan","^N225"],["Hang Seng HK","^HSI"],
-     ["SSE composite China","000001.SS"]]
-s = 1
-total=0
-while total<100:
-    s = input('type the ticker correctly ')
-    k = eval(input('type the percentage composition in your portfolio for the ticker entered (for example write 50% as 50) '))
-    weights[s] = (k / 100)
-    indices.append([k, s])
-    total+=k
-   
+from scipy import optimize, stats
 
 
-tickers = list(np.array(indices)[:, 1])
+TRADING_DAYS = 252
 
 
-# Request the full history and keep the adjusted-close column explicitly.
-download = yf.download(tickers, period="max", auto_adjust=False)
-if download is None or download.empty or "Adj Close" not in download.columns:
-    raise SystemExit("Unable to download adjusted prices. Check the tickers and try again.")
-dw = download["Adj Close"]
-
-dw = dw.reindex(tickers, axis=1)
-
-insufficient_history = dw.count()[dw.count() < 3780]
-if not insufficient_history.empty:
-    details = ", ".join(f"{ticker}: {count}" for ticker, count in insufficient_history.items())
-    raise SystemExit(
-        "At least 3780 daily prices are required for each ticker. "
-        f"Missing or insufficient history ({details}). Check the tickers and try again."
-    )
-
-
-performance = {}
-
-# Use the latest 3780 available prices (about 15 trading years) per ticker.
-# Keep prices in chronological order; missing quotes are not forward-filled.
-data = {}
-
-for index in dw:
-    closes = dw[index].sort_index().dropna().tail(3780)
-    if not np.isfinite(closes.to_numpy()).all() or (closes <= 0).any():
-        raise SystemExit(f"Invalid prices for {index}: prices must be finite and positive.")
-    # Simple percentage return: (current price / previous price - 1) * 100.
-    data[index] = {
-        'closes': closes.tolist(),
-        'returns': closes.pct_change(fill_method=None).dropna().mul(100).tolist(),
-    }
-
-# Calculating standard deviation as the average of the standard deviation every 45 sessions to weight more short-term fluctuations
-for index in data:
-    performance[index] = {'average return': [], 'std_dev_percentage': []}
-    # Annualized arithmetic mean in percent, assuming 252 sessions per year.
-    # This is an expected-return estimate, not a compounded annual return (CAGR).
-    performance[index]['average return'].append(np.mean(data[index]['returns']) * 252)
-
-for index in data:
-    temp = []
-    n = 1
-    while n < 84:
-        temp.append(((np.std(data[index]['closes'][n * 45 - 45:n * 45])) / data[index]['closes'][n * 45 - 45]) * 100)
-        n += 1
-     
-    performance[index]['std_dev_percentage'].append(np.mean(temp))
-print('RISK AND RETURN OF A BASKET OF TICKERS INCLUDING YOUR POSITIONS')
-print('Average returns: annualized arithmetic mean (%), using 252 sessions per year.')
-print('')
-print(performance)
-print('')
-portfolio = {'average_return': 0, 'std_dev_percentage': 0}
-for index in weights:
-    for ticker in weights:
-        if ticker == index:
-            portfolio['average_return'] += weights[ticker] * performance[index]['average return'][0]
-            portfolio['std_dev_percentage'] += weights[ticker] * performance[index]['std_dev_percentage'][0]
-print('')
-print('RISK AND RETURN OF YOUR PORTFOLIO')
-print('')
-print(portfolio)           
-
-# Correlation matrix
-df = pd.DataFrame()
-i = 0
-for index in data:
-    df.insert(i, index, data[index]['closes'])
-print('')
-print('CORRELATION MATRIX OF YOUR PORTFOLIO ')
-print('')
-print(df.iloc[:, 0:len(weights)].corr())
+def prepare_returns(prices, observations=3780):
+    """Keep returns whose current and previous quotes exist for every asset."""
+    if observations < 2:
+        raise ValueError("At least two return observations are required.")
+    if prices.empty or prices.index.has_duplicates or prices.columns.has_duplicates:
+        raise ValueError("Prices must be nonempty with unique dates and tickers.")
+    prices = prices.sort_index().astype(float)
+    quoted = prices.to_numpy()
+    if np.isinf(quoted).any() or (prices <= 0).any().any():
+        raise ValueError("Quoted prices must be finite and positive.")
+    # Calculate before dropping missing rows: a gap must not become a daily return.
+    returns = prices.pct_change(fill_method=None).dropna().tail(observations)
+    if len(returns) < observations:
+        raise ValueError(
+            f"Need {observations} common daily returns; found {len(returns)}. "
+            "Check the tickers or lower --observations."
+        )
+    if (returns.std() == 0).any():
+        raise ValueError("Each asset must have nonconstant returns to fit a copula.")
+    return returns
 
 
-# Risk detection
-
-corr_matrix = df.iloc[:, 0:len(weights)].corr()
-
-# Calculate eigenvalues and eigenvectors
-eigenvalues, eigenvectors = np.linalg.eig(corr_matrix)
-
-# Sort eigenvalues in descending order
-sorted_eig_values = np.sort(eigenvalues)[::-1]
-
-# Percentage of explained variance
-explained_variance = sorted_eig_values / np.sum(sorted_eig_values) * 100
+def regularize_correlation(correlation):
+    """Make a correlation matrix positive definite, including duplicate assets."""
+    values, vectors = np.linalg.eigh(correlation)
+    matrix = (vectors * np.maximum(values, 1e-8)) @ vectors.T
+    scale = np.sqrt(np.diag(matrix))
+    return matrix / np.outer(scale, scale)
 
 
-print("Eigenvalues of the correlation matrix:")
-print(sorted_eig_values)
-print("\nPercentage of variance explained by each eigenvalue:")
-print(explained_variance)
+class EmpiricalCopula:
+    """Fit dependence on ranks and retain each asset's historical return range."""
 
-# If the first eigenvalue explains more than 50% of the total variance:
-if explained_variance[0] > 50:
-    print("\n⚠️ WARNING: A single factor dominates the portfolio! Concentrated risk.")
-else:
-    print("\n✅ Good portfolio diversification.")
+    def __init__(self, returns, family="student"):
+        if family not in ("gaussian", "student"):
+            raise ValueError("Copula family must be 'gaussian' or 'student'.")
+        self.family = family
+        self.returns = returns.to_numpy()
+        self.dimension = self.returns.shape[1]
+        self.df = None
+        uniform = returns.rank(method="average").to_numpy() / (len(returns) + 1)
+        if self.dimension == 1:
+            self.correlation = np.eye(1)
+        elif family == "gaussian":
+            scores = stats.norm.ppf(uniform)
+            self.correlation = regularize_correlation(np.corrcoef(scores, rowvar=False))
+        else:
+            # For elliptical copulas, rho = sin(pi * Kendall's tau / 2).
+            self.correlation = regularize_correlation(
+                np.sin(np.pi * returns.corr(method="kendall").to_numpy() / 2)
+            )
+            # Estimate degrees of freedom with the rank-based correlation fixed.
+            def negative_log_likelihood(df):
+                scores = stats.t.ppf(uniform, df)
+                joint = stats.multivariate_t.logpdf(scores, shape=self.correlation, df=df)
+                margins = stats.t.logpdf(scores, df).sum(axis=1)
+                return -np.sum(joint - margins)
 
-    
+            fit = optimize.minimize_scalar(
+                negative_log_likelihood, bounds=(2.01, 50), method="bounded"
+            )
+            if not fit.success or not np.isfinite(fit.fun):
+                raise ValueError("Student t copula fitting failed.")
+            self.df = float(fit.x)
 
-
-
-
-    
-        
-        
-
-
-
-    
-
-
- 
-        
-
-
-
-
-
-
-    
-        
-
-
-
-
-            
-                
-
-
-
-
-     
-
-
-
-
- 
-    
-
-     
-
-
-        
-        
+    def simulate(self, scenarios=100_000, seed=42):
+        """Return joint daily scenarios in decimal units, in the original column order."""
+        if scenarios < 1:
+            raise ValueError("The number of scenarios must be positive.")
+        rng = np.random.default_rng(seed)
+        if self.dimension == 1:
+            uniform = rng.uniform(size=(scenarios, 1))
+        else:
+            scores = rng.multivariate_normal(np.zeros(self.dimension), self.correlation, scenarios)
+            if self.family == "student":
+                # One shared scale per scenario creates joint tail dependence.
+                scores /= np.sqrt(rng.chisquare(self.df, scenarios) / self.df)[:, None]
+                uniform = stats.t.cdf(scores, self.df)
+            else:
+                uniform = stats.norm.cdf(scores)
+        return np.column_stack([
+            np.quantile(self.returns[:, column], uniform[:, column])
+            for column in range(self.dimension)
+        ])
 
 
+def loss_risk(returns, confidence):
+    """Return loss VaR and ES; positive numbers mean losses, negative ones gains."""
+    losses = -np.asarray(returns, dtype=float)
+    if losses.ndim != 1 or not len(losses) or not np.isfinite(losses).all():
+        raise ValueError("Risk requires a nonempty vector of finite returns.")
+    if not 0 < confidence < 1:
+        raise ValueError("Confidence must be between zero and one.")
+    var = np.quantile(losses, confidence, method="inverted_cdf")
+    # Average the worst (1-confidence) probability mass, splitting the boundary
+    # observation when necessary. This also handles ties at the VaR correctly.
+    ordered = np.sort(losses)[::-1]
+    tail_size = (1 - confidence) * len(ordered)
+    whole = int(np.floor(tail_size))
+    remainder = tail_size - whole
+    es = (ordered[:whole].sum() + remainder * ordered[whole]) / tail_size
+    return float(var), float(es)
 
 
+class PortfolioAnalysis:
+    """Analyze fixed beginning-of-day portfolio weights on aligned daily returns."""
+
+    def __init__(self, returns, weights):
+        self.returns = returns.copy()
+        self.weights = pd.Series(weights, dtype=float).reindex(returns.columns)
+        if set(weights) != set(returns.columns) or self.weights.isna().any():
+            raise ValueError("Weights must match the return columns exactly.")
+        if (
+            not np.isfinite(self.weights).all()
+            or (self.weights <= 0).any()
+            or not np.isclose(self.weights.sum(), 1, rtol=0, atol=1e-8)
+        ):
+            raise ValueError("Weights must be positive, finite, and sum to one.")
+        if (
+            returns.empty or returns.shape[1] == 0 or returns.columns.has_duplicates
+            or not np.isfinite(returns.to_numpy()).all()
+        ):
+            raise ValueError("Returns must be nonempty, finite, and have unique tickers.")
+        if len(returns) < 2 or (returns.std() == 0).any():
+            raise ValueError("Copula fitting requires at least two nonconstant observations.")
+        self.portfolio_returns = returns @ self.weights
+        self.copulas = {}
+
+    def summary(self):
+        daily = pd.concat([self.returns, self.portfolio_returns.rename("Portfolio")], axis=1)
+        return pd.DataFrame({
+            "Annual mean (%)": daily.mean() * TRADING_DAYS * 100,
+            "Annual volatility (%)": daily.std(ddof=1) * np.sqrt(TRADING_DAYS) * 100,
+        })
+
+    def risk_table(self, scenarios=100_000, seed=42, value=None):
+        if value is not None and (not np.isfinite(value) or value <= 0):
+            raise ValueError("Portfolio value must be finite and positive.")
+        samples = {"Historical": self.portfolio_returns.to_numpy()}
+        for family in ("gaussian", "student"):
+            model = EmpiricalCopula(self.returns, family)
+            self.copulas[family] = model
+            samples[family.title() + " copula"] = model.simulate(scenarios, seed) @ self.weights.to_numpy()
+        rows = []
+        for method, returns in samples.items():
+            for confidence in (0.95, 0.99):
+                var, es = loss_risk(returns, confidence)
+                row = {"Method": method, "Confidence": f"{confidence:.0%}",
+                       "VaR (%)": var * 100, "ES (%)": es * 100}
+                if value is not None:
+                    row.update({"VaR (money)": var * value, "ES (money)": es * value})
+                rows.append(row)
+        return pd.DataFrame(rows).set_index(["Method", "Confidence"])
 
 
+def read_weights():
+    """Read long-only allocations without evaluating user input as Python."""
+    weights = {}
+    while sum(weights.values()) < 1 - 1e-8:
+        ticker = input("Ticker: ").strip().upper()
+        if not ticker or ticker in weights:
+            print("Enter a nonempty ticker that has not already been added.")
+            continue
+        try:
+            percent = float(input(f"Portfolio allocation for {ticker} (50 means 50%): "))
+        except ValueError:
+            print("Enter a number for the allocation.")
+            continue
+        remaining = (1 - sum(weights.values())) * 100
+        if not np.isfinite(percent) or percent <= 0 or percent > remaining + 1e-6:
+            print(f"Allocation must be positive and no greater than {remaining:.6f}%.")
+            continue
+        weights[ticker] = percent / 100
+    return weights
 
 
+def download_prices(tickers):
+    data = yf.download(tickers, period="max", auto_adjust=False)
+    if data is None or data.empty or "Adj Close" not in data.columns:
+        raise ValueError("No adjusted prices downloaded. Check the tickers and connection.")
+    return data["Adj Close"].reindex(columns=tickers)
 
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--observations", type=int, default=3780, help="Common daily returns to use (default: 3780).")
+    parser.add_argument("--scenarios", type=int, default=100_000, help="Scenarios per copula (default: 100000).")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed (default: 42).")
+    parser.add_argument("--value", type=float, help="Portfolio value for monetary VaR and ES.")
+    args = parser.parse_args()
+    if args.observations < 2 or args.scenarios < 1 or args.seed < 0:
+        parser.error("Observations must be >= 2, scenarios >= 1, and seed >= 0.")
+    if args.value is not None and (not np.isfinite(args.value) or args.value <= 0):
+        parser.error("Portfolio value must be finite and positive.")
+    print("Enter portfolio positions until allocations total 100%.")
+    print("All prices must be in the same currency; FX conversion is not included.")
+    try:
+        weights = read_weights()
+        returns = prepare_returns(download_prices(list(weights)), args.observations)
+        analysis = PortfolioAnalysis(returns, weights)
+        print(f"\nSample: {returns.index.min().date()} to {returns.index.max().date()} ({len(returns)} daily returns)")
+        print("\nAnnualized statistics (252 sessions; arithmetic mean, not CAGR)")
+        print(analysis.summary().round(3).to_string())
+        correlation = returns.corr()
+        print("\nAsset return correlation")
+        print(correlation.round(3).to_string())
+        explained = np.linalg.eigvalsh(correlation)[::-1] / len(correlation) * 100
+        print("PCA explained variance (%):", np.round(explained, 2))
+        print("PCA describes linear concentration; it does not certify diversification.")
+        print(f"\nOne-day loss risk ({args.scenarios:,} scenarios per copula; seed {args.seed})")
+        print(analysis.risk_table(args.scenarios, args.seed, args.value).round(3).to_string())
+        df = analysis.copulas["student"].df
+        if df is not None:
+            print(f"Student t degrees of freedom: {df:.2f} (fit bounds: 2.01 to 50).")
+        else:
+            print("Single asset: both copulas reduce to the same empirical margin.")
+        print("Positive VaR/ES means a loss. Empirical margins cannot exceed historical asset extremes.")
+        print("Static in-sample estimates; volatility clustering and out-of-sample validation are not included.")
+    except (ValueError, EOFError) as error:
+        parser.exit(1, f"Error: {error}\n")
+
+
+if __name__ == "__main__":
+    main()

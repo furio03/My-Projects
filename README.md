@@ -67,7 +67,13 @@ Implements a Bayesian approach to estimate the mean of an unknown distribution b
 Creates approximate 95% confidence bounds for random walk processes to estimate likely future variation.
 
 ### 3) `portfolio_analysis.py`
-Performs portfolio analysis by calculating returns, standard deviations, and concentration of risk using PCA.
+Calculates portfolio returns, covariance-aware volatility, and return-based PCA.
+Compares one-day historical VaR and Expected Shortfall with Gaussian and Student t
+copula simulations using empirical return distributions. Includes reproducible
+sampling and optional monetary risk estimates.
+
+See [the portfolio analysis guide](docs/portfolio_analysis.md) for setup, examples,
+model assumptions, and offline tests.
 
 ## Summary
 
