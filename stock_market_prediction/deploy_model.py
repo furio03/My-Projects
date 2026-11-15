@@ -33,7 +33,7 @@ df_test_thr = calculate_indicators(df_test_thr)
 _, kmeans_model, _ = add_kmeans(df_test_thr, k=best_k)
 df_test_thr['groups'] = add_kmeans(df_test_thr, k=best_k, model=kmeans_model)
 
-df_test_inverted = df_test_thr.iloc[::-1].reset_index(drop=True)
+df_test_inverted = df_test_thr.sort_values('Date').reset_index(drop=True)
 feature_cols = [col for col in df_test_thr.columns if col != 'action']
 
 df_test_shifted = shift_df(best_shift, df_test_inverted)

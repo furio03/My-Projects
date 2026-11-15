@@ -7,6 +7,9 @@ def label_data(df: pd.DataFrame, threshold:float) -> pd.DataFrame:
     """
  
     df['action'] = 'hold'
+    # The final observation has no known next-session outcome.
+    if len(df):
+        df.loc[df.index[-1], 'action'] = pd.NA
     for i in range(len(df) - 1):
         actual_Close = df.iloc[i]['Close']
         future_Close = df.iloc[i + 1]['Close']

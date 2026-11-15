@@ -38,16 +38,16 @@ for threshold in thresholds:
     df_train_thr['groups'], kmeans_model, _ = add_kmeans(df_train_thr, k=best_k)
     df_test_thr['groups'] = add_kmeans(df_test_thr, k=best_k, model=kmeans_model)
 
-    df_train_inverted = df_train_thr.iloc[::-1].reset_index(drop=True)
-    df_test_inverted = df_test_thr.iloc[::-1].reset_index(drop=True)
+    df_train_inverted = df_train_thr.sort_values('Date').reset_index(drop=True)
+    df_test_inverted = df_test_thr.sort_values('Date').reset_index(drop=True)
 
     feature_cols = [col for col in df_train_thr.columns if col != 'action']
 
     for shift in shifts:  
         df_train_shifted = shift_df(shift, df_train_inverted)
         df_test_shifted = shift_df(shift, df_test_inverted)
-        df_train_shifted = df_train_shifted.dropna(subset=feature_cols, how='any')
-        df_test_shifted = df_test_shifted.dropna(subset=feature_cols, how='any')
+        df_train_shifted = df_train_shifted.dropna(subset=feature_cols + ['action'], how='any')
+        df_test_shifted = df_test_shifted.dropna(subset=feature_cols + ['action'], how='any')
 
         labels = list(df_train_shifted['action'].unique())
         weights = [1 if l in ['buy', 'sell'] else 1 for l in labels]

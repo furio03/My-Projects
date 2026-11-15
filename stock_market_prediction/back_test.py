@@ -1,7 +1,7 @@
 import pandas as pd
 
 def back_test_one_symbol(df_instructions: pd.DataFrame, position_value: float = 1000.0):
-    df_inverted = df_instructions.iloc[::-1].reset_index(drop=True)
+    df_inverted = df_instructions.sort_values('Date').reset_index(drop=True)
     df_performance = df_inverted.copy()
     df_performance = df_performance[['Date', 'prediction_score', 'prediction_label', 'Close']].copy()
     df_performance['cumulative_profit'] = 0.0
