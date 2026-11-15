@@ -11,7 +11,7 @@ users. The smaller experiments explore density estimation and stochastic process
 
 | Project | Main question | Methods and outputs |
 |---|---|---|
-| [Portfolio analysis](#1-portfolio-analysis) | How does dependence between assets affect portfolio losses? | Empirical distributions, Gaussian and Student t copulas, Monte Carlo, VaR, Expected Shortfall, PCA |
+| [Portfolio analysis](#1-portfolio-analysis) | How does dependence between assets affect portfolio losses? | Copulas, EVT/Pareto tails, Monte Carlo, VaR/ES, monthly loss probabilities, efficient frontier |
 | [Stock market prediction](#2-stock-market-prediction) | Can historical market features classify the next session's price movement? | Feature engineering, XGBoost, Random Forest, K-Means, temporal validation, trading simulation |
 | [Automated reporting](#3-automated-reporting) | How can a tabular dataset become an interpretable analytical report? | Data preparation, exploratory statistics, clustering, influence diagnostics, LLM-assisted interpretation, PDF retrieval |
 | [Prior-weighted density estimation](#4-prior-weighted-density-estimation) | How does a prior change the shape of an estimated density? | Gaussian KDE, numerical integration, density weighting, interval estimation |
@@ -19,12 +19,13 @@ users. The smaller experiments explore density estimation and stochastic process
 
 ## 1. Portfolio analysis
 
-**Purpose.** Estimate the daily loss distribution of a user-defined portfolio and
-compare the effect of alternative assumptions about dependence between its assets.
+**Purpose.** Analyze a user-defined portfolio through three complementary views:
+daily losses under different dependence assumptions, end-of-month extreme-loss
+probabilities, and the mean-variance trade-off between alternative allocations.
 Rather than treating each holding in isolation, the analysis models their joint
 behavior and aggregates simulated returns using the portfolio weights.
 
-**Data and methodology.** The script downloads adjusted historical prices from
+**Data and methodology.** The application downloads adjusted historical prices from
 Yahoo Finance, calculates simple returns, and selects a common chronological sample
 across holdings. Missing prices are not forward-filled. The default sample contains
 3,780 common daily returns, with a configurable history length.
@@ -45,6 +46,18 @@ The analysis combines:
 - **Loss measurement:** one-day Value at Risk and Expected Shortfall at 95% and 99%,
   compared with a direct historical estimate. Monetary losses are available when a
   portfolio value is supplied.
+- **Extreme Value Theory:** a Peaks Over Threshold model fits a Generalized Pareto
+  Distribution to extreme daily portfolio log losses. It estimates the tail index
+  ξ, provides a conditional bootstrap interval, and exposes threshold sensitivity.
+  An empirical body plus the fitted tail generates 21-session compounded paths.
+- **Monthly loss probabilities:** a table estimates the probability of finishing
+  21 trading sessions at least **1%, 3%, 5%, 10%, 15%, 20%, or 25% below the initial
+  portfolio value**. Event counts and exact Monte Carlo intervals accompany each
+  estimate, so zero simulated events are not presented as proof of zero risk.
+- **Efficient frontier:** constrained mean-variance optimization finds long-only,
+  fully invested allocations from the global minimum-variance point to the highest
+  estimated asset return. The chart locates the current portfolio and individual
+  assets, with optimized weights available in the exported curve.
 
 **How to interpret the output.** VaR is a quantile of daily losses; Expected Shortfall
 measures the average loss in the corresponding worst tail. Comparing the copula
@@ -53,19 +66,41 @@ while retaining the same empirical asset distributions. The t copula can represe
 joint tail events. PCA provides a complementary view of linear concentration;
 it does not establish that a portfolio is adequately diversified.
 
-**Scope.** These are static, in-sample estimates for same-currency assets. Empirical
-margins do not extrapolate beyond historical asset extremes. FX conversion,
-conditional volatility, asymmetric dependence, and out-of-sample risk backtesting
-are not implemented. More simulated scenarios reduce numerical noise, not the
-uncertainty in the estimated model.
+The desktop interface brings these results into separate daily-risk, monthly-EVT,
+and efficient-frontier views. It supports editable holdings, configurable samples,
+a synthetic-data demo, and CSV/PNG exports with analysis metadata. Downloads and
+calculations run in the background so the window stays responsive.
 
-**Stack:** NumPy, pandas, SciPy, yfinance.
+**How to read the monthly results.** These are terminal losses relative to today's
+value, not the probability of touching a drawdown during the month. The EVT model
+fits the aggregate portfolio's daily log losses; its ξ is not a direct estimate of
+the shape of monthly percentage losses. Monthly scenarios assume independent days
+and daily rebalancing. The daily copula comparison is a separate model.
 
-[Source](portfolio_analysis.py) · [Methodology, assumptions, and usage](docs/portfolio_analysis.md)
+**Scope.** Estimates use same-currency historical assets and static model parameters.
+Copula margins stay within historical asset extremes; the separate EVT tail can
+extrapolate beyond observed daily log losses. The Monte Carlo probability intervals
+cover counting error only, while the ξ bootstrap is conditional on the selected
+threshold and independent exceedances. Neither resolves model uncertainty,
+volatility clustering, or changing regimes. The efficient frontier uses uncertain
+historical means and covariance, not forward-looking return forecasts. FX
+conversion, transaction costs, and out-of-sample risk backtesting are not implemented.
+
+**Stack:** NumPy, pandas, SciPy, yfinance, Tkinter, Matplotlib.
+
+[Source](portfolio_analysis/) · [Desktop launcher](run_guy.py) ·
+[Methodology, assumptions, and usage](docs/portfolio_analysis.md)
 
 ```sh
 python3 -m pip install -r requirements-portfolio.txt
-python3 portfolio_analysis.py --value 100000
+python3 run_guy.py
+```
+
+The desktop window opens **only** through `run_guy.py`. Importing the package or
+its modules does not open a GUI. For an offline demonstration:
+
+```sh
+python3 run_guy.py --demo
 ```
 
 ## 2. Stock market prediction
@@ -239,9 +274,10 @@ estimate to monitoring a process repeatedly through time.
 
 ```text
 .
-├── portfolio_analysis.py          # Portfolio returns, copulas, VaR and ES
+├── run_guy.py                    # The desktop GUI entry point
+├── portfolio_analysis/           # Returns, copulas, EVT, frontier and desktop UI
 ├── requirements-portfolio.txt
-├── docs/portfolio_analysis.md     # Risk methodology and assumptions
+├── docs/portfolio_analysis.md    # Risk methodology and assumptions
 ├── stock_market_prediction/      # Temporal ML pipeline and trading simulation
 ├── auto_reporting/               # Statistical reporting, PDF export and RAG
 ├── Posterior_estimation.py        # Exploratory prior-weighted density experiment
@@ -251,7 +287,9 @@ estimate to monitoring a process repeatedly through time.
 
 The portfolio and forecasting tests use deterministic examples and synthetic data
 to check return calculations, temporal boundaries, model persistence, risk measures,
-and execution accounting without downloading market data:
+and execution accounting without downloading market data. Separate opt-in desktop
+tests exercise input validation, background calculation, charts, exports, and error
+recovery. See the portfolio guide for running those tests with a display:
 
 ```sh
 python3 -m unittest discover -s tests -v

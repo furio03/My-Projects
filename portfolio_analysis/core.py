@@ -250,4 +250,3 @@ def main():
         print("Static in-sample estimates; volatility clustering and out-of-sample validation are not included.")
     except (ValueError, EOFError) as error:
         parser.exit(1, f"Error: {error}\n")
-
