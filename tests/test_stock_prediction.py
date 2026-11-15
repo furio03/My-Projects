@@ -8,6 +8,8 @@ import pandas as pd
 from stock_market_prediction.back_test import back_test_one_symbol
 from stock_market_prediction.data_manipulation import shift_df
 from stock_market_prediction.label import label_data
+from stock_market_prediction.main import split_periods, train_and_evaluate
+from unittest.mock import patch
 
 
 class TimingTests(unittest.TestCase):
@@ -44,6 +46,37 @@ class TimingTests(unittest.TestCase):
         result = back_test_one_symbol(frame)
         self.assertAlmostEqual(result.cumulative_profit.iloc[-1], 100.)
         pd.testing.assert_frame_equal(result, back_test_one_symbol(frame.iloc[::-1]))
+
+
+class SelectionTests(unittest.TestCase):
+    def test_threshold_selection_never_sees_final_test(self):
+        frame = pd.DataFrame({
+            'Date': pd.date_range('2025-01-01', periods=30),
+            'Close': np.arange(30) + 100., 'action': ['hold'] * 30,
+        })
+        calls = []
+
+        def fake_forecast(train, evaluation, forecast, **options):
+            calls.append((train.copy(), evaluation.copy()))
+            score = [0.2, 0.8, 0.4, 0.9][len(calls) - 1]
+            return evaluation, {'test_report': {'macro avg': {'precision': score}}}, 2
+
+        with patch('stock_market_prediction.main.prepare_frame', return_value=frame), patch(
+            'stock_market_prediction.main.fit_and_forecast', side_effect=fake_forecast
+        ):
+            _, _, settings = train_and_evaluate(frame, None, validation_size=5, test_size=5)
+        self.assertEqual(settings['threshold'], 0.3)
+        self.assertEqual(len(calls), 4)
+        for train, validation in calls[:3]:
+            self.assertLess(train.Date.max(), validation.Date.min())
+            self.assertEqual(validation.Date.max(), frame.Date.iloc[23])
+        self.assertEqual(calls[-1][0].Date.max(), frame.Date.iloc[23])
+        self.assertEqual(calls[-1][1].Date.min(), frame.Date.iloc[25])
+        train, validation, test = split_periods(frame, 5, 5)
+        self.assertEqual(train.index[-1], 18)
+        self.assertEqual(validation.index[0], 20)
+        self.assertEqual(validation.index[-1], 23)
+        self.assertEqual(test.index[0], 25)
 
 
 if __name__ == '__main__':
