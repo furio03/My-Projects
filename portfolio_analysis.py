@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 from scipy import optimize, stats
+from portfolio_evt import ExtremeValueRisk
 
 
 TRADING_DAYS = 252
@@ -146,6 +147,10 @@ class PortfolioAnalysis:
             "Annual volatility (%)": daily.std(ddof=1) * np.sqrt(TRADING_DAYS) * 100,
         })
 
+    def monthly_risk(self, scenarios=100_000, seed=42, quantile=0.95):
+        model = ExtremeValueRisk(self.portfolio_returns, quantile)
+        return model, model.probability_table(scenarios=scenarios, seed=seed)
+
     def risk_table(self, scenarios=100_000, seed=42, value=None):
         if value is not None and (not np.isfinite(value) or value <= 0):
             raise ValueError("Portfolio value must be finite and positive.")
@@ -200,6 +205,7 @@ def main():
     parser.add_argument("--scenarios", type=int, default=100_000, help="Scenarios per copula (default: 100000).")
     parser.add_argument("--seed", type=int, default=42, help="Random seed (default: 42).")
     parser.add_argument("--value", type=float, help="Portfolio value for monetary VaR and ES.")
+    parser.add_argument("--evt-threshold", type=float, default=0.95, help="Daily log-loss threshold quantile (default: 0.95).")
     args = parser.parse_args()
     if args.observations < 2 or args.scenarios < 1 or args.seed < 0:
         parser.error("Observations must be >= 2, scenarios >= 1, and seed >= 0.")
@@ -228,6 +234,19 @@ def main():
         else:
             print("Single asset: both copulas reduce to the same empirical margin.")
         print("Positive VaR/ES means a loss. Empirical margins cannot exceed historical asset extremes.")
+        print("\nEVT end-of-month losses (21 independent sessions, daily rebalanced weights)")
+        try:
+            tail, probabilities = analysis.monthly_risk(args.scenarios, args.seed, args.evt_threshold)
+            interval = tail.shape_interval(seed=args.seed)
+            print(f"Daily log-loss tail index xi: {tail.shape:.3f}; bootstrap 95% interval: {interval}")
+            print(f"Threshold quantile: {tail.quantile:.1%}; exceedances: {len(tail.excesses)}")
+            print(probabilities.round(5).to_string())
+            print("MC intervals describe simulation counting error, not parameter or model uncertainty.")
+            print("Zero simulated events do not imply zero risk. Daily independence excludes volatility clustering.")
+            print("Threshold sensitivity:")
+            print(tail.threshold_stability().round(4).to_string(index=False))
+        except ValueError as error:
+            print(f"EVT unavailable: {error}")
         print("Static in-sample estimates; volatility clustering and out-of-sample validation are not included.")
     except (ValueError, EOFError) as error:
         parser.exit(1, f"Error: {error}\n")
