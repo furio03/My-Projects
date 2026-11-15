@@ -7,7 +7,9 @@ estimates are evaluated, and what conclusions the results can support.
 
 The first two projects focus on quantitative research and model evaluation. The
 reporting application connects statistical analysis with an interface for business
-users. The smaller experiments explore density estimation and stochastic processes.
+users. The final two projects are smaller experiments I built during the first two
+years of my bachelor's degree. I keep them here as a record of where I started and how my
+approach to statistics and programming has developed since then.
 
 | Project | Main question | Methods and outputs |
 |---|---|---|
@@ -228,6 +230,9 @@ python3 app/website.py
 
 ## 4. Prior-weighted density estimation
 
+*A smaller project built during the first two years of my bachelor's degree,
+kept as a reminder of where I started.*
+
 **Purpose.** Explore how an estimated data density changes when it is weighted by
 a prior expressing a different initial location. The script generates 3,000 normal
 observations with a known mean, estimates their density using Gaussian kernel
@@ -250,6 +255,9 @@ parameter-inference version would need an explicit sampling likelihood.
 [Source: `Posterior_estimation.py`](Posterior_estimation.py)
 
 ## 5. Random-walk simulation
+
+*A smaller project built during the first two years of my bachelor's degree,
+kept as a reminder of where I started.*
 
 **Purpose.** Visualize how uncertainty grows when independent, zero-mean increments
 are accumulated over time. The script simulates five paths, each with 100,000
