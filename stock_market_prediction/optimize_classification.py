@@ -1,28 +1,19 @@
-import pandas as pd
+import numpy as np
 
-def optimize(df: pd.DataFrame, threshold: float):
-    """
-    If the model has a low prediction score for a buy or a sell, then convert it to a hold.
-    Also, prevent more than 3 consecutive buys or sells.
-    """
-    df = df.copy()
-    mask = ((df['prediction_label'] == 'buy') | (df['prediction_label'] == 'sell')) & (df['prediction_score'] < threshold)
-    df.loc[mask, 'prediction_label'] = 'hold'
+try:
+    from .back_test import back_test_one_symbol
+except ImportError:
+    from back_test import back_test_one_symbol
 
-    count = 0
-    current_side = None
-    for idx, row in df.iterrows():
-        label = row['prediction_label']
-        if label in ['buy', 'sell']:
-            if label == current_side:
-                count += 1
-            else:
-                current_side = label
-                count = 1
-            if count > 3:
-                df.at[idx, 'prediction_label'] = 'hold'
-        else:
-            current_side = None
-            count = 0
-        
-    return df
+
+def optimize(df, threshold=0.5, max_positions=3, position_value=1000., initial_cash=3000.):
+    """Filter confidence, then apply the same execution limits as the backtest."""
+    if not np.isfinite(threshold) or not 0 <= threshold <= 1:
+        raise ValueError('The minimum prediction score must be between zero and one.')
+    if not np.isfinite(df.prediction_score).all() or not df.prediction_score.between(0, 1).all():
+        raise ValueError('Prediction scores must be finite probabilities.')
+    result = df.sort_values('Date').reset_index(drop=True).copy()
+    result.loc[result.prediction_score < threshold, 'prediction_label'] = 'hold'
+    executions = back_test_one_symbol(result, position_value, initial_cash, max_positions)
+    result['prediction_label'] = executions.executed_label.to_numpy()
+    return result

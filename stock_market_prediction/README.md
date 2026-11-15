@@ -71,7 +71,7 @@ that row's scale or group assignment.
 
 ## Backtest accounting
 
-Each accepted buy or sell adds a fixed 1,000 monetary units at that session's
+Each accepted entry adds a fixed 1,000 monetary units at that session's
 actual close. An opposite signal closes the existing side; it does not also open
 the opposite side on the same row. Hold leaves the position unchanged.
 
@@ -82,6 +82,22 @@ and `equity = cash + exposure = initial_cash + cumulative_profit`. An open final
 position remains marked to market instead of disappearing from the result.
 Short positions have negative exposure. There are no fees, slippage, borrow costs,
 interest, dividends credited separately, or margin calls in this accounting model.
+
+The limit is three currently open entries, including entries separated by hold
+signals. Additional signals become `executed_label = hold` when that limit or
+available capital prevents entry. Opposite signals close the whole position and
+release its reserved capital; a hold does neither. `open_entries`, `reserved_capital`,
+and `free_capital` expose these constraints. Both the baseline and filtered backtest
+enforce the same limits.
+
+Each entry reserves its initial notional on both long and short trades. Available
+capital is initial cash plus realized P&L minus reserved notional; short-sale
+proceeds cannot finance additional entries. This is an explicit fixed-notional
+budget, not a broker margin model or a guarantee that short losses are bounded.
+
+Deployment filters scores below `--min-score` (default 0.5), independently of the
+percentage threshold used to construct target labels. The filter uses the same
+execution engine as the backtest, so holds cannot reset a separate position counter.
 
 ## Files and tests
 

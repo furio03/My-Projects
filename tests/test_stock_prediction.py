@@ -13,6 +13,7 @@ from stock_market_prediction.label import label_data
 from stock_market_prediction.main import split_periods, train_and_evaluate, save_artifact
 from stock_market_prediction.deploy_model import load_artifact
 from stock_market_prediction.forecasting import predict
+from stock_market_prediction.optimize_classification import optimize
 from unittest.mock import patch
 from stock_market_prediction.forecasting import forecast, temporal_folds
 from stock_market_prediction.indicators import add_kmeans
@@ -200,6 +201,52 @@ class AccountingTests(unittest.TestCase):
         frame['Date'] = frame.Date.iloc[0]
         with self.assertRaisesRegex(ValueError, 'unique'):
             back_test_one_symbol(frame)
+
+
+class PositionLimitTests(unittest.TestCase):
+    def instructions(self, actions, prices=None):
+        return pd.DataFrame({
+            'Date': pd.date_range('2025-01-01', periods=len(actions)),
+            'Close': prices if prices is not None else [100.] * len(actions),
+            'prediction_label': actions, 'prediction_score': [0.9] * len(actions),
+        })
+
+    def test_hold_does_not_reset_open_entries_on_either_side(self):
+        for side in ['buy', 'sell']:
+            frame = self.instructions([side, 'hold'] * 6)
+            filtered = optimize(frame)
+            self.assertEqual(filtered.prediction_label.eq(side).sum(), 3)
+            report = back_test_one_symbol(frame)
+            self.assertEqual(report.open_entries.max(), 3)
+            self.assertEqual(report.executed_label.eq(side).sum(), 3)
+            np.testing.assert_allclose(report.reserved_capital.iloc[-1], 3000.)
+            pd.testing.assert_frame_equal(
+                report[['equity', 'open_entries']],
+                back_test_one_symbol(filtered)[['equity', 'open_entries']],
+            )
+
+    def test_initial_cash_limits_shorts_without_reusing_sale_proceeds(self):
+        frame = self.instructions(['sell', 'sell', 'sell'])
+        result = back_test_one_symbol(frame, initial_cash=1000.)
+        self.assertEqual(result.executed_label.eq('sell').sum(), 1)
+        self.assertEqual(result.cash.iloc[-1], 2000.)
+        self.assertEqual(result.free_capital.iloc[-1], 0.)
+
+    def test_closing_releases_entries_but_losses_reduce_available_capital(self):
+        frame = self.instructions(['buy', 'hold', 'sell', 'buy', 'buy'], [100., 90., 90., 90., 90.])
+        result = back_test_one_symbol(frame, initial_cash=2000., max_positions=1)
+        self.assertEqual(result.open_entries.tolist(), [1, 1, 0, 1, 1])
+        self.assertEqual(result.executed_label.tolist(), ['buy', 'hold', 'sell', 'buy', 'hold'])
+        self.assertAlmostEqual(result.realized_profit.iloc[-1], -100.)
+        self.assertAlmostEqual(result.free_capital.iloc[-1], 900.)
+
+    def test_confidence_filter_does_not_release_an_open_position(self):
+        frame = self.instructions(['buy', 'sell', 'buy', 'buy'])
+        frame.loc[1, 'prediction_score'] = 0.1
+        filtered = optimize(frame, threshold=0.5, max_positions=1)
+        self.assertEqual(filtered.prediction_label.tolist(), ['buy', 'hold', 'hold', 'hold'])
+        with self.assertRaises(ValueError):
+            optimize(frame, threshold=1.2)
 
 
 if __name__ == '__main__':
