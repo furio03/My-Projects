@@ -11,6 +11,7 @@ from stock_market_prediction.label import label_data
 from stock_market_prediction.main import split_periods, train_and_evaluate
 from unittest.mock import patch
 from stock_market_prediction.forecasting import forecast, temporal_folds
+from stock_market_prediction.indicators import add_kmeans
 
 
 class TimingTests(unittest.TestCase):
@@ -111,6 +112,22 @@ class TemporalTests(unittest.TestCase):
             np.testing.assert_array_equal(actual, training)
         self.assertEqual(len(predictions), 15)
         self.assertIn('pipeline', metrics['model'])
+
+
+class ScalingTests(unittest.TestCase):
+    def test_prediction_reuses_training_scale_regardless_of_batch(self):
+        training = pd.DataFrame({'feature': [0., 1., 2., 100., 101., 102.]})
+        _, model, _ = add_kmeans(training, 2)
+        mean = model.named_steps['standardscaler'].mean_.copy()
+        small = pd.DataFrame({'feature': [0., 1., 2.]})
+        extreme = pd.DataFrame({'feature': [0., 1., 10000.]})
+        with patch('sklearn.preprocessing.StandardScaler.fit', side_effect=AssertionError('Refit on prediction data')):
+            first = add_kmeans(small, 2, model)
+            second = add_kmeans(extreme, 2, model)
+            alone = add_kmeans(small.iloc[:1], 2, model)
+        self.assertEqual(first.iloc[0], second.iloc[0])
+        self.assertEqual(first.iloc[0], alone.iloc[0])
+        np.testing.assert_array_equal(model.named_steps['standardscaler'].mean_, mean)
 
 
 if __name__ == '__main__':

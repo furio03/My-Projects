@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
 from sklearn.metrics import silhouette_score
 
 def calculate_cmf(df: pd.DataFrame, period: int = 20) -> pd.Series:
@@ -67,25 +68,23 @@ def find_best_k(df: pd.DataFrame, k_range=range(2, 10)):
             best_k = k
     return best_k
 
-def add_kmeans(df: pd.DataFrame, k: int , model=None):
-    """
-    If model is None, find the optimal k, train KMeans on df and return the groups, the model and the chosen k.
-    If model is provided, apply the model to the data and return the groups.
-    """
-    
-    feature_cols = [col for col in df.select_dtypes(include='number').columns if col != 'action']
-    X = df[feature_cols].dropna()
-    scaler = StandardScaler()
-    X[feature_cols] = scaler.fit_transform(X[feature_cols])
+def add_kmeans(df: pd.DataFrame, k: int, model=None):
+    """Fit scaling and centroids together, or reuse both without refitting."""
     if model is None:
-        kmeans = KMeans(n_clusters=k, random_state=42, n_init=250)
-        groups = pd.Series([pd.NA] * len(df), index=df.index)
-        groups.loc[X.index] = kmeans.fit_predict(X)
-        return groups, kmeans, k
+        columns = [column for column in df.select_dtypes(include='number')
+                   if column not in ('action', 'groups')]
     else:
-        groups = pd.Series([pd.NA] * len(df), index=df.index)
-        groups.loc[X.index] = model.predict(X)
-        return groups
+        columns = list(model.feature_names_in_)
+    features = df[columns].dropna()
+    groups = pd.Series(index=df.index, dtype=float)
+    if model is None:
+        model = make_pipeline(
+            StandardScaler(), KMeans(n_clusters=k, random_state=42, n_init=10),
+        )
+        groups.loc[features.index] = model.fit_predict(features)
+        return groups, model, k
+    groups.loc[features.index] = model.predict(features)
+    return groups
 
 
 def calculate_rsi(series: pd.Series, period: int = 14) -> pd.Series:
